@@ -2,7 +2,7 @@ export class Cell {
   constructor(row, column) {
     this.row = row;
     this.column = column;
-    this.links = {};
+    this.links = new Map();
     this.north = null;
     this.south = null;
     this.east = null;
@@ -10,7 +10,7 @@ export class Cell {
   }
 
   link(cell, bidirectional) {
-    this.links[cell] = true;
+    this.links.set(cell, true);
     if (bidirectional) {
       cell.link(this, false);
     }
@@ -18,28 +18,15 @@ export class Cell {
   }
 
   unlink(cell, bidirectional) {
-    const index = this.links.indexOf(cell);
-    if (index > -1) {
-      this.links.splice(index, 1);
-    }
+    this.links.delete(cell);
     if (bidirectional) {
       cell.unlink(this, false);
     }
     return this;
   }
 
-  links() {
-    const result = [];
-    for (var cell in this.links) {
-      if (Object.prototype.hasOwnProperty.call(this.links, cell)) {
-        result.push(cell);
-      }
-    }
-    return result;
-  }
-
   linked(cell) {
-    return this.links[cell] !== undefined && this.links[cell] !== null;
+    return this.links.has(cell);
   }
 
   neighbours() {
