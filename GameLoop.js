@@ -21,7 +21,7 @@ function startup() {
 function initGL() {
   ctx.shaderProgram = loadAndCompileShaders(gl, 'VertexShader.glsl', 'FragmentShader.glsl');
   setUpAttributesAndUniforms();
-  setUpBuffers();
+  //setUpBuffers();
   gl.clearColor(0.5,0.5,0.6,1);
 }
 
@@ -31,9 +31,10 @@ function setUpAttributesAndUniforms(){
 
 function draw() {
   gl.clear(gl.COLOR_BUFFER_BIT);
-  const maze = new Maze(5, 5);
+  const maze = new Maze(20, 20);
   const generator = new MazeGenerator();
   generator.generate(maze);
+  console.log(maze.toString());
   const floor = new Floor(200, 200, 2, ctx.aVertexPositionId);
   floor.draw(gl);
 }
