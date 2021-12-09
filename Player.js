@@ -13,21 +13,35 @@ class Player {
       D: "KeyD",
       S: "KeyS",
     };
+    this.direction = {
+      UP: 1,
+      RIGHT: 2,
+      DOWN: 3,
+      LEFT: 4
+    };
+    this.hookupEventListeners();
   }
 
-  update() {
+  //Regelmässig
+  updatePosition(elapsed) {
     //direction = getDirection
     const direction = 1;
-    if (this.canMoveTo(direction)) {
-      this.move(direction);
+
+    if(this.isDown(this.key.UP)){
+      console.log("is down");
+      this.move(null);
     }
   }
 
   move(direction) {
+    // Move
+    this.camera.setPosition(this.currentCell.x, this.currentCell.y, this.currentCell.z);
     // this.currentCell = ...
     // this.camera.positionTo oder was auch immer
   }
 
+
+  // Nur Zelle zu zelle
   canMoveTo(direction) {
     return true;
   }

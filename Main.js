@@ -9,13 +9,15 @@ function main() {
 class Main {
 
     gl;
+    previousTimestamp;
 
     // objects
     wiredCube;
     solidCubeRight;
 
     matrices;
-    view;
+    camera;
+    player;
     light;
     ctx;
 
@@ -49,12 +51,8 @@ class Main {
             vColorId: -1,
         };
 
-        this.view = {
-            eye: {x: 0, y: 0, z: 300},
-            center: {x: 0, y:0, z: 0},
-            up: {x:0, y: 1, z: 0}
-        };
-
+        this.camera = new Camera();
+        this.player = new Player(null, this.camera)
         // lightning is im camera/eye coordinates
         // so eye is (0,0,0) for light
         this.light = {
@@ -119,7 +117,7 @@ class Main {
         print4x4Mat("Orthogonal Projection:", this.matrices.projectionMat);
 
         // set view
-        this.view.eye.y = 50;
+        this.camera.view.eye.y = 50;
         this.setLookAt();
 
         // set light
@@ -133,7 +131,7 @@ class Main {
         this.gl.viewport(0,0,800,600);
 
         // Register callback for animation
-        window.requestAnimationFrame((timestamp) => drawAnimated(timestamp, this));
+        window.requestAnimationFrame((timestamp) => this.drawAnimated(timestamp));
     }
 
     /**
@@ -212,11 +210,39 @@ class Main {
 
     }
 
+
+    drawAnimated(timeStamp) {
+        // calculate time in ms since last call
+        if(this.previousTimestamp == undefined) {
+            this.previousTimestamp = timeStamp;
+        }
+        const elapsed = timeStamp - this.previousTimestamp;
+        //console.log("Last Call: " + previousTimestamp + " Current Call: " + timeStamp + " Elapsed: " + elapsed);
+
+        // move or change objects
+        if(elapsed!==0) {
+            //TODO: For object in objects
+            //TODO:   object.updatePosition(elapsed)
+            this.player.updatePosition(elapsed);
+            this.solidCubeRight.rotation += this.solidCubeRight.rotationSpeed.rad * elapsed;
+            this.solidCubeLeft.rotation += this.solidCubeLeft.rotationSpeed.rad * elapsed;
+            this.solidSphere.rotation += this.solidSphere.rotationSpeed.rad * elapsed;
+        }
+
+        this.draw();
+        this.previousTimestamp = timeStamp;
+        window.requestAnimationFrame((timestamp) => this.drawAnimated(timestamp));
+    }
     /**
      * Draw the scene.
      */
     draw() {
         "use strict";
+        //Get all objects from mazegenerator
+        //Get camera position etc
+        //Set view Mat
+        //Draw all objects
+
         console.log("Drawing");
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
@@ -233,9 +259,9 @@ class Main {
 
     setLookAt() {
         mat4.lookAt(this.matrices.modelViewMat,
-            [this.view.eye.x, this.view.eye.y ,this.view.eye.z],
-            [this.view.center.x, this.view.center.y, this.view.center.z],
-            [this.view.up.x, this.view.up.y, this.view.up.z]);
+            [this.camera.view.eye.x, this.camera.view.eye.y ,this.camera.view.eye.z],
+            [this.camera.view.center.x, this.camera.view.center.y, this.camera.view.center.z],
+            [this.camera.view.up.x, this.camera.view.up.y, this.camera.view.up.z]);
     }
 
     setModelViewMat(obj) {

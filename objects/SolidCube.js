@@ -193,23 +193,4 @@ class SolidCube {
         this.gl.uniform1i(ctx.uEnableTextureId, 0);
         this.gl.drawElements(this.gl.TRIANGLES, 36 ,this.gl.UNSIGNED_SHORT, 0);
     }
-
-    drawWithTexture(textureObj, aVertexPositionId, aVertexTextureCoord, uSampler2DId, uEnableTexture) {
-        // position
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.verticeBuffer);
-        this.gl.vertexAttribPointer(aVertexPositionId, 3, this.gl.FLOAT, false, 0, 0);
-        this.gl.enableVertexAttribArray(aVertexPositionId);
-
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.textureBuffer);
-        this.gl.vertexAttribPointer(aVertexTextureCoord, 2, this.gl.FLOAT, false, 0, 0);
-        this.gl.enableVertexAttribArray(aVertexTextureCoord);
-        this.gl.activeTexture(this.gl.TEXTURE0);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, textureObj);
-        this.gl.uniform1i(uSampler2DId, 0);
-
-        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.edgeBuffer);
-
-        this.gl.uniform1i(uEnableTexture, 1);
-        this.gl.drawElements(this.gl.TRIANGLES, 36, this.gl.UNSIGNED_SHORT, 0);
-    }
 }

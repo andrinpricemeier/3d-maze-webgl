@@ -3,6 +3,7 @@ export class Cell {
     this.row = row;
     this.column = column;
     this.links = new Map();
+    // Nur die mit Weg sind gesetzt
     this.north = null;
     this.south = null;
     this.east = null;
@@ -25,6 +26,7 @@ export class Cell {
     return this;
   }
 
+  //is linked?
   linked(cell) {
     return this.links.has(cell);
   }
