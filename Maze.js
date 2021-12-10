@@ -1,4 +1,5 @@
-import { Cell } from "./Cell.js";
+import {Cell} from "./cell.js";
+
 export class Maze {
   constructor(rows, columns) {
     this.rows = rows;
@@ -76,6 +77,10 @@ export class Maze {
       return null;
     }
     return this.grid[row][column];
+  }
+
+  start_cell(){
+    return this.get_cell(0,0);
   }
 
   random_cell() {

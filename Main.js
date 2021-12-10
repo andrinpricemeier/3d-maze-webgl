@@ -1,3 +1,6 @@
+import {Maze} from "./maze.js";
+import {MazeGenerator} from "./MazeGenerator.js";
+
 window.onload = main;
 
 //var main
@@ -23,6 +26,9 @@ class Main {
 
     textures;
     colors;
+
+    maze;
+    generator;
 
     constructor() {
         this.matrices = {
@@ -51,8 +57,7 @@ class Main {
             vColorId: -1,
         };
 
-        this.camera = new Camera();
-        this.player = new Player(null, this.camera)
+
         // lightning is im camera/eye coordinates
         // so eye is (0,0,0) for light
         this.light = {
@@ -75,6 +80,13 @@ class Main {
             black: [0.0, 0.0, 0.0],
         }
 
+        this.maze = new Maze(5, 5);
+        this.generator = new MazeGenerator();
+        this.generator.generate(this.maze);
+
+        this.camera = new Camera();
+        this.player = new Player(this.maze.start_cell(), this.camera);
+        console.log(this.maze.toString())
         this.startup();
     }
 
@@ -243,7 +255,7 @@ class Main {
         //Set view Mat
         //Draw all objects
 
-        console.log("Drawing");
+        //console.log("Drawing");
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
         this.setModelViewMat(this.solidCubeLeft);

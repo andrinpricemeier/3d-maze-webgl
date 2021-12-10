@@ -31,6 +31,23 @@ export class Cell {
     return this.links.has(cell);
   }
 
+  isLinkedNorth() {
+    return this.linked(this.north);
+  }
+
+  isLinkedEast() {
+    return this.linked(this.east);
+  }
+
+  isLinkedSouth() {
+    return this.linked(this.south);
+  }
+
+  isLinkedWest() {
+    return this.linked(this.west);
+  }
+
+
   neighbours() {
     list = [];
     if (this.north) {
