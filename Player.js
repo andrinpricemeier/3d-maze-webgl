@@ -66,24 +66,19 @@ class Player {
     this.camera.setPosition(this.currentCell.column, this.currentCell.row, 0);
     // this.currentCell = ...
     // this.camera.positionTo oder was auch immer
-    console.log("new position column: " + this.currentCell.column + " row: " + this.currentCell.row)
   }
 
   getDirection(){
     if(this.isDown(this.key.UP)){
-      console.log("Press up")
       return this.direction.UP;
     }
     else if(this.isDown(this.key.RIGHT)){
-      console.log("Press right")
       return this.direction.RIGHT;
     }
     else if(this.isDown(this.key.DOWN)){
-      console.log("Press down")
       return this.direction.DOWN;
     }
     else if(this.isDown(this.key.LEFT)){
-      console.log("Press left")
       return this.direction.LEFT;
     }
     return -1;
@@ -122,7 +117,6 @@ class Player {
 
   onKeydown = (event) => {
     this.pressed[event.code] = true;
-    console.log("on key down: " + event.code)
   };
 
   onKeyup = (event) => {

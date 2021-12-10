@@ -236,6 +236,7 @@ class Main {
             //TODO: For object in objects
             //TODO:   object.updatePosition(elapsed)
             this.player.updatePosition(elapsed);
+            console.log(this.maze.toStringWithPlayer(this.player));
             this.solidCubeRight.rotation += this.solidCubeRight.rotationSpeed.rad * elapsed;
             this.solidCubeLeft.rotation += this.solidCubeLeft.rotationSpeed.rad * elapsed;
             this.solidSphere.rotation += this.solidSphere.rotationSpeed.rad * elapsed;

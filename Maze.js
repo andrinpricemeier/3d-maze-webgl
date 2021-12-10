@@ -69,6 +69,34 @@ export class Maze {
     return output;
   }
 
+  toStringWithPlayer(player) {
+    let output = "+" + "---+".repeat(this.columns) + "\n";
+    for (const row of this.getRows()) {
+      let top = "|";
+      let bottom = "+";
+      for (const cell of row) {
+        let actual = cell;
+        if (!cell) {
+          actual = new Cell(-1, -1);
+        }
+        let body = "   ";
+        if((player.currentCell.row  === cell.row) && (player.currentCell.column  === cell.column)){
+          body = " x ";
+        }
+        const east_boundary = cell.linked(cell.east) ? " " : "|";
+        body += east_boundary;
+        top += body;
+        let south_boundary = cell.linked(cell.south) ? "   " : "---";
+        let corner = "+";
+        south_boundary += corner;
+        bottom += south_boundary;
+      }
+      output += top + "\n";
+      output += bottom + "\n";
+    }
+    return output;
+  }
+
   get_cell(row, column) {
     if (row < 0 || row >= this.rows) {
       return null;
