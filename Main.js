@@ -114,7 +114,7 @@ class Main {
 
         // use z-Buffer because we have objects which are overlapping,
         // remeber to also clear color buffer bit with gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
-        //gl.enable(gl.DEPTH_TEST);
+        this.gl.enable(this.gl.DEPTH_TEST);
 
         this.ctx.shaderProgram = loadAndCompileShaders(this.gl, 'shaders/VertexShader.glsl', 'shaders/FragmentShader.glsl');
         this.setUpAttributesAndUniforms();
@@ -196,7 +196,7 @@ class Main {
         this.solidCubeLeft.rotationAxis.y = 1;
 
 
-        this.solidSphere = new SolidSphere(this.gl);
+        this.solidSphere = new SolidSphere(this.gl, 24, 24);
         this.solidSphere.scale.x = 2;
         this.solidSphere.scale.y = 2;
         this.solidSphere.scale.z = 2;
@@ -243,10 +243,8 @@ class Main {
         this.gl.clear(this.gl.COLOR_BUFFER_BIT);
 
         this.setModelViewMat(this.solidCubeLeft);
-        this.solidCubeLeft.draw(this.ctx);
-
-        //this.setModelViewMat(this.solidCubeRight);
-        //this.solidCubeRight.draw(this.ctx);
+        this.solidCubeLeft.draw(this.ctx, this.textures.lenna);
+        
 
         this.setModelViewMat(this.solidSphere);
         this.solidSphere.draw(this.ctx);

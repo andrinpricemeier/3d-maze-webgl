@@ -29,27 +29,27 @@ class SolidCube {
             0.5, -0.5, -0.5,       // v1
             0.5,  0.5, -0.5,       // v2
             -0.5,  0.5, -0.5,       // v3
-                                    // front
+            // front
             -0.5, -0.5, 0.5,        // v4
             0.5, -0.5, 0.5,        // v5
             0.5,  0.5, 0.5,        // v6
             -0.5,  0.5, 0.5,        // v7
-                                    // right
+            // right
             0.5, -0.5, -0.5,       // v8 = v1
             0.5,  0.5, -0.5,       // v9 = v2
             0.5,  0.5,  0.5,       // v10 = v6
             0.5, -0.5,  0.5,       // v11 = v5
-                                   // left
+            // left
             -0.5, -0.5, -0.5,       // v12 = v0
             -0.5,  0.5, -0.5,       // v13 = v3
             -0.5,  0.5,  0.5,       // v14 = v7
             -0.5, -0.5,  0.5,       // v15 = v4
-                                    // top
+            // top
             -0.5, 0.5, -0.5,        // v16 = v3
             -0.5, 0.5,  0.5,        // v17 = v7
             0.5, 0.5,  0.5,        // v18 = v6
             0.5, 0.5, -0.5,        // v19 = v2
-                                   //bottom
+            //bottom
             -0.5, -0.5, -0.5,       // v20 = v0
             -0.5, -0.5, 0.5,        // v21 = v4
             0.5, -0.5, 0.5,        // v22 = v5
@@ -102,7 +102,9 @@ class SolidCube {
 
     defineTextureCoord() {
         var textureCoords = [
-            0.0,  0.0,              // back
+
+            // back
+            0.0,  0.0,
             1.0,  0.0,
             1.0,  1.0,
             0.0,  1.0,
@@ -131,6 +133,8 @@ class SolidCube {
             1.0,  0.0,
             1.0,  1.0,
             0.0,  1.0
+
+
         ];
         var buffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
@@ -162,7 +166,7 @@ class SolidCube {
         return buffer;
     }
 
-    draw(ctx) {
+    draw(ctx, textureObj) {
         // position
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.verticeBuffer);
         this.gl.vertexAttribPointer(ctx.aVertexPositionId, 3, this.gl.FLOAT, false, 0, 0);
@@ -173,11 +177,6 @@ class SolidCube {
         this.gl.vertexAttribPointer(ctx.aVertexColorId, 3, this.gl.FLOAT, false, 0, 0);
         this.gl.enableVertexAttribArray(ctx.aVertexColorId);
 
-        // texture coordinates
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.textureCoordBuffer);
-        this.gl.vertexAttribPointer(ctx.aVertexTextureCoordId, 2, this.gl.FLOAT, false, 0, 0); // !
-        this.gl.enableVertexAttribArray(ctx.aVertexTextureCoordId); // !
-
         // normal
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.normalsBuffer);
         this.gl.vertexAttribPointer(ctx.aVertexNormalId, 3, this.gl.FLOAT, false, 0, 0);
@@ -186,11 +185,23 @@ class SolidCube {
         // bind the element array
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.sidesBuffer);
 
-        // disable lightning
+        // enable lightning
         this.gl.uniform1i(ctx.uEnableLightningId, 1);
 
-        // disbale textures and draw elements
-        this.gl.uniform1i(ctx.uEnableTextureId, 0);
+        // texture coordinates
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.textureCoordBuffer);
+        this.gl.vertexAttribPointer(ctx.aVertexTextureCoordId, 2, this.gl.FLOAT, false, 0, 0); // !
+        this.gl.enableVertexAttribArray(ctx.aVertexTextureCoordId);
+
+        // disbale/enable textures
+        if(typeof(textureObj) != "undefined") {
+            this.gl.activeTexture(this.gl.TEXTURE0);
+            this.gl.bindTexture(this.gl.TEXTURE_2D, textureObj);
+            this.gl.uniform1i(ctx.uSampler2DId, 0);
+            this.gl.uniform1i(ctx.uEnableTextureId, 1);
+        } else {
+            this.gl.uniform1i(ctx.uEnableTextureId, 0);
+        }
         this.gl.drawElements(this.gl.TRIANGLES, 36 ,this.gl.UNSIGNED_SHORT, 0);
     }
 }

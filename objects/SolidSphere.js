@@ -7,15 +7,17 @@
  */
 class SolidSphere {
 
-    constructor(gl) {
+    constructor(gl, longitudeBands, latitudeBands) {
         this.gl = gl;
-        this.SPHERE_DIV = 24;
-        this.verticeAndNormals = this.defineVertices();
-        this.verticeBuffer = this.verticeAndNormals.vertice
-        this.normalsBuffer = this.verticeAndNormals.normals
+        this.longitudeBands = longitudeBands;
+        this.latitudeBands = latitudeBands;
+        this.numberOfTriangles = latitudeBands*longitudeBands*2;
+        this.verticeNormalsTextures = this.defineVerticesNormalsTextures();
+        this.verticeBuffer = this.verticeNormalsTextures.vertice
+        this.normalsBuffer = this.verticeNormalsTextures.normals
+        this.textureCoordBuffer = this.verticeNormalsTextures.textures;
         this.edgeBuffer = this.defineEdges();
         this.colorBuffer = this.defineColor();
-        this.textureBuffer = this.defineTextures();
 
         this.pos = { x:0, y: 0, z: 0 };
         this.scale = { x: 1, y: 1, z: 1 };
@@ -24,30 +26,42 @@ class SolidSphere {
         this.rotationSpeed = {rad: (Math.PI / 1800) / 8}; //0.025°/ms
     }
 
-    defineVertices() {
+    defineVerticesNormalsTextures() {
+        "use strict";
         // define the vertices of the sphere
-        var i, ai, si, ci;
-        var j, aj, sj, cj;
-
         var vertices = [];
         var normals = [];
-        for (j = 0; j <= this.SPHERE_DIV; j++) {
-            aj = j * Math.PI / this.SPHERE_DIV;
-            sj = Math.sin(aj);
-            cj = Math.cos(aj);
-            for(i = 0; i <= this.SPHERE_DIV; i++) {
-                ai = i * 2 * Math.PI / this.SPHERE_DIV;
-                si = Math.sin(ai);
-                ci = Math.cos(ai);
-                var x = si * sj;
-                var y = cj;
-                var z = ci * sj;
+        var textures = [];
+
+        for (var latNumber = 0; latNumber <= this.latitudeBands; latNumber++) {
+            var theta = latNumber * Math.PI / this.latitudeBands;
+            var sinTheta = Math.sin(theta);
+            var cosTheta = Math.cos(theta);
+
+            for (var longNumber = 0; longNumber <= this.longitudeBands; longNumber++) {
+                var phi = longNumber * 2 * Math.PI / this.longitudeBands;
+                var sinPhi = Math.sin(phi);
+                var cosPhi = Math.cos(phi);
+
+                // position (and normals as it is a unit sphere)
+                var x = cosPhi * sinTheta;
+                var y = cosTheta;
+                var z = sinPhi * sinTheta;
+
+                // texture coordinates
+                var u = 1 - (longNumber / this.longitudeBands);
+                var v = 1 - (latNumber / this.latitudeBands);
+
                 vertices.push(x);
                 vertices.push(y);
                 vertices.push(z);
+
                 normals.push(x);
                 normals.push(y);
                 normals.push(z);
+
+                textures.push(u);
+                textures.push(v);
             }
         }
 
@@ -59,32 +73,32 @@ class SolidSphere {
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, normalsBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(normals), this.gl.STATIC_DRAW);
 
+        var textureBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, textureBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(textures), this.gl.STATIC_DRAW);
+
+
         return {
             vertice: verticeBuffer,
-            normals: normalsBuffer
+            normals: normalsBuffer,
+            textures: textureBuffer
         };
     }
 
     defineEdges() {
-        // define the edges for the cube, there are 12 edges in a cube
-
-        var i, ai, si, ci;
-        var j, aj, sj, cj;
-        var p1, p2;
-
         var vertexIndices = [];
-        for (j = 0; j <= this.SPHERE_DIV; j++) {
-            for(i = 0; i <= this.SPHERE_DIV; i++) {
-                p1 = j * (this.SPHERE_DIV+1) + i;
-                p2 = p1 + (this.SPHERE_DIV+1);
+        for (var latNumber = 0; latNumber < this.latitudeBands; latNumber++) {
+            for (var longNumber = 0; longNumber < this.longitudeBands; longNumber++) {
+                var first = (latNumber * (this.longitudeBands + 1)) + longNumber;
+                var second = first + this.longitudeBands + 1;
 
-                vertexIndices.push(p1);
-                vertexIndices.push(p2);
-                vertexIndices.push(p1+1);
+                vertexIndices.push(first);
+                vertexIndices.push(first + 1);
+                vertexIndices.push(second);
 
-                vertexIndices.push(p1+1);
-                vertexIndices.push(p2);
-                vertexIndices.push(p2+1);
+                vertexIndices.push(second);
+                vertexIndices.push(first + 1);
+                vertexIndices.push(second + 1);
             }
         }
 
@@ -97,13 +111,12 @@ class SolidSphere {
     }
 
     defineColor() {
-        var i, ai, si, ci;
-        var j, aj, sj, cj;
-        var p1, p2;
+        var i;
+        var j;
 
         var colors = [];
-        for (j = 0; j <= this.SPHERE_DIV; j++) {
-            for (i = 0; i <= this.SPHERE_DIV; i++) {
+        for (j = 0; j <= this.latitudeBands; j++) {
+            for (i = 0; i <= this.longitudeBands; i++) {
                 //colors.push(Math.random());
                 //colors.push(Math.random());
                 //colors.push(Math.random());
@@ -119,51 +132,7 @@ class SolidSphere {
         return buffer;
     }
 
-    defineTextures() {
-        var textureCoord = [
-            // bottom
-            -1,  -1,
-            0,  -1,
-            -1,  0,
-            0,  0,
-
-            // right
-            -1,  -1,
-            0,  -1,
-            -1,  0,
-            0,  0,
-
-            // Top
-            -1,  -1,
-            0,  -1,
-            -1,  0,
-            0,  0,
-
-            // left
-            -1,  -1,
-            0,  -1,
-            -1,  0,
-            0,  0,
-
-            // back
-            -1,  -1,
-            0,  -1,
-            -1,  0,
-            0,  0,
-
-            // front
-            -1,  -1,
-            0,  -1,
-            -1,  0,
-            0,  0,
-        ];
-        var buffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, buffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(textureCoord), this.gl.STATIC_DRAW);
-        return buffer;
-    }
-
-    draw(ctx) {
+    draw(ctx, textureObj) {
         // position
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.verticeBuffer);
         this.gl.vertexAttribPointer(ctx.aVertexPositionId, 3, this.gl.FLOAT, false, 0, 0);
@@ -182,24 +151,22 @@ class SolidSphere {
         // sides
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.edgeBuffer);
         this.gl.uniform1i(ctx.uEnableTextureId, false);
-        this.gl.drawElements(this.gl.TRIANGLES, 3750, this.gl.UNSIGNED_SHORT, 0); // SPHERE_DIV 12 = 1014,
-    }
 
-    drawWithTexture(textureObj, aVertexPositionId, aVertexTextureCoord, uSampler2DId, uEnableTexture) {
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.verticeBuffer);
-        this.gl.vertexAttribPointer(aVertexPositionId, 3, this.gl.FLOAT, false, 0, 0);
-        this.gl.enableVertexAttribArray(aVertexPositionId);
+        // texture coordinates
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.textureCoordBuffer);
+        this.gl.vertexAttribPointer(ctx.aVertexTextureCoordId, 2, this.gl.FLOAT, false, 0, 0); // !
+        this.gl.enableVertexAttribArray(ctx.aVertexTextureCoordId);
 
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.textureBuffer);
-        this.gl.vertexAttribPointer(aVertexTextureCoord, 2, this.gl.FLOAT, false, 0, 0);
-        this.gl.enableVertexAttribArray(aVertexTextureCoord);
-        this.gl.activeTexture(this.gl.TEXTURE0);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, textureObj);
-        this.gl.uniform1i(uSampler2DId, 0);
+        // disbale/enable textures
+        if(typeof(textureObj) != "undefined") {
+            this.gl.activeTexture(this.gl.TEXTURE0);
+            this.gl.bindTexture(this.gl.TEXTURE_2D, textureObj);
+            this.gl.uniform1i(ctx.uSampler2DId, 0);
+            this.gl.uniform1i(ctx.uEnableTextureId, 1);
+        } else {
+            this.gl.uniform1i(ctx.uEnableTextureId, 0);
+        }
 
-        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.edgeBuffer);
-
-        this.gl.uniform1i(uEnableTexture, 1);
-        this.gl.drawElements(this.gl.TRIANGLES, 36, this.gl.UNSIGNED_SHORT, 0);
+        this.gl.drawElements(this.gl.TRIANGLES, this.numberOfTriangles*3, this.gl.UNSIGNED_SHORT, 0); // SPHERE_DIV 12 = 1014,
     }
 }
