@@ -24,15 +24,16 @@ class Player {
       S: "KeyS",
     };
     this.direction = {
-      UP: 1,
-      RIGHT: 2,
-      DOWN: 3,
-      LEFT: 4
+      UP: 0,
+      RIGHT: 1,
+      DOWN: 2,
+      LEFT: 3
     };
     this.rotation = {
       CLOCKWISE: 1,
       COUNTERCLOCKWISE: 2
     };
+
     this.hookupEventListeners();
     this.camera.setPosition(this.currentCell.column,  0, this.currentCell.row);
     //this.camera.setPosition(this.currentCell.column, this.currentCell.row, 0);
@@ -73,29 +74,31 @@ class Player {
   }
 
   rotate(rotation) {
-    // Move
-    if(rotation === this.rotation.CLOCKWISE){
+    // Rotate
 
+    if(rotation === this.rotation.CLOCKWISE){
+      this.camera.rotateClockwise();
     }
     else if(rotation === this.rotation.COUNTERCLOCKWISE){
-
+      this.camera.rotateCounterClockwise();
     }
+    this.camera.setPosition(this.currentCell.column, 0, this.currentCell.row);
 
     //this.camera.setPosition(this.currentCell.column, this.currentCell.row, 0);
   }
 
   getDirection(){
     if(this.isDown(this.key.UP)){
-      return this.direction.UP;
+      return (this.direction.UP + this.camera.orientation) % 4;
     }
     else if(this.isDown(this.key.RIGHT)){
-      return this.direction.RIGHT;
+      return (this.direction.RIGHT + this.camera.orientation) % 4;
     }
     else if(this.isDown(this.key.DOWN)){
-      return this.direction.DOWN;
+      return (this.direction.DOWN + this.camera.orientation) % 4;
     }
     else if(this.isDown(this.key.LEFT)){
-      return this.direction.LEFT;
+      return (this.direction.LEFT + this.camera.orientation) % 4;
     }
     return -1;
   }
@@ -124,6 +127,21 @@ class Player {
     }
     else if(direction === this.direction.LEFT){
       return this.currentCell.isLinkedWest();
+    }
+  }
+
+  getOrientationArrow(){
+    if(this.camera.orientation === this.camera.orientations.NORTH){
+      return "^"
+    }
+    else if(this.camera.orientation === this.camera.orientations.EAST){
+      return ">"
+    }
+    else if(this.camera.orientation === this.camera.orientations.SOUTH){
+      return "v"
+    }
+    else if(this.camera.orientation === this.camera.orientations.WEST){
+      return "<"
     }
   }
 

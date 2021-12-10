@@ -81,7 +81,7 @@ export class Maze {
         }
         let body = "   ";
         if((player.currentCell.row  === cell.row) && (player.currentCell.column  === cell.column)){
-          body = " x ";
+          body = " "+ player.getOrientationArrow() +" ";
         }
         const east_boundary = cell.linked(cell.east) ? " " : "|";
         body += east_boundary;

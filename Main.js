@@ -202,10 +202,8 @@ class Main {
         this.solidSphere.scale.z = 2;
         this.solidSphere.pos.x = 3;
         this.solidSphere.pos.y = 0;
-        this.solidSphere.pos.z = -5;
+        this.solidSphere.pos.z = 5;
         this.solidSphere.rotationAxis.y = 1;
-
-
     }
 
 
