@@ -34,6 +34,7 @@ class Player {
       COUNTERCLOCKWISE: 2
     };
     this.hookupEventListeners();
+    this.camera.setPosition(this.currentCell.column,  0, this.currentCell.row);
     //this.camera.setPosition(this.currentCell.column, this.currentCell.row, 0);
   }
 
@@ -41,11 +42,16 @@ class Player {
   updatePosition(elapsed) {
     //direction = getDirection
     const direction = this.getDirection();
+    const rotation = this.getRotation();
 
     if(direction !== -1){
       if(this.canMoveTo(direction)){
         this.move(direction)
       }
+    }
+
+    if(rotation !== -1){
+      this.rotate(rotation)
     }
   }
 
@@ -63,9 +69,19 @@ class Player {
     else if(direction === this.direction.LEFT){
       this.currentCell = this.currentCell.west;
     }
-    this.camera.setPosition(this.currentCell.column, this.currentCell.row, 0);
-    // this.currentCell = ...
-    // this.camera.positionTo oder was auch immer
+    this.camera.setPosition(this.currentCell.column, 0, this.currentCell.row);
+  }
+
+  rotate(rotation) {
+    // Move
+    if(rotation === this.rotation.CLOCKWISE){
+
+    }
+    else if(rotation === this.rotation.COUNTERCLOCKWISE){
+
+    }
+
+    //this.camera.setPosition(this.currentCell.column, this.currentCell.row, 0);
   }
 
   getDirection(){
@@ -83,6 +99,17 @@ class Player {
     }
     return -1;
   }
+
+  getRotation(){
+    if(this.isDown(this.key.D)){
+      return this.rotation.CLOCKWISE;
+    }
+    else if(this.isDown(this.key.A)){
+      return this.rotation.COUNTERCLOCKWISE;
+    }
+    return -1;
+  }
+
 
   // Nur Zelle zu zelle
   canMoveTo(direction) {

@@ -124,12 +124,14 @@ class Main {
         this.gl.clearColor(0.8,0.8,0.8,1);
 
         // set orthogonal projection
-        mat4.ortho(this.matrices.projectionMat, -400, 400, -300, 300, 0.00001, 1000);
+        mat4.perspective(this.matrices.projectionMat, 1.8, this.gl.drawingBufferWidth/this.gl.drawingBufferHeight, 0.01, 1000)
+
+        //mat4.ortho(this.matrices.projectionMat, -400, 400, -300, 300, 0.00001, 1000);
         this.gl.uniformMatrix4fv(this.ctx.uProjectionMatId, false, this.matrices.projectionMat);
         print4x4Mat("Orthogonal Projection:", this.matrices.projectionMat);
 
         // set view
-        this.camera.view.eye.y = 50;
+        //this.camera.view.eye.y = 0;
         this.setLookAt();
 
         // set light
@@ -185,38 +187,22 @@ class Main {
             this.colors.cyan,
             this.colors.yellow,
             this.colors.magenta);
-        this.solidCubeLeft.scale.x = 100;
-        this.solidCubeLeft.scale.y = 100;
-        this.solidCubeLeft.scale.z = 100;
-        this.solidCubeLeft.pos.x = 100;
+        this.solidCubeLeft.scale.x = 2;
+        this.solidCubeLeft.scale.y = 2;
+        this.solidCubeLeft.scale.z = 2;
+        this.solidCubeLeft.pos.x = -3;
         this.solidCubeLeft.pos.y = 0;
-        this.solidCubeLeft.pos.z = 0;
+        this.solidCubeLeft.pos.z = -5;
         this.solidCubeLeft.rotationAxis.y = 1;
-
-        //this.solidCubeRight = new SolidCube(this.gl, []);
-        this.solidCubeRight = new SolidCube(this.gl,
-            this.colors.red,
-            this.colors.green,
-            this.colors.blue,
-            this.colors.cyan,
-            this.colors.yellow,
-            this.colors.magenta);
-        this.solidCubeRight.scale.x = 100;
-        this.solidCubeRight.scale.y = 100;
-        this.solidCubeRight.scale.z = 100;
-        this.solidCubeRight.pos.x = -100;
-        this.solidCubeRight.pos.y = 0;
-        this.solidCubeRight.pos.z = 0;
-        this.solidCubeRight.rotationAxis.y = 1;
 
 
         this.solidSphere = new SolidSphere(this.gl);
-        this.solidSphere.scale.x = 100;
-        this.solidSphere.scale.y = 100;
-        this.solidSphere.scale.z = 100;
-        this.solidSphere.pos.x = -200;
+        this.solidSphere.scale.x = 2;
+        this.solidSphere.scale.y = 2;
+        this.solidSphere.scale.z = 2;
+        this.solidSphere.pos.x = 3;
         this.solidSphere.pos.y = 0;
-        this.solidSphere.pos.z = 0;
+        this.solidSphere.pos.z = -5;
         this.solidSphere.rotationAxis.y = 1;
 
 
@@ -237,7 +223,6 @@ class Main {
             //TODO:   object.updatePosition(elapsed)
             this.player.updatePosition(elapsed);
             console.log(this.maze.toStringWithPlayer(this.player));
-            this.solidCubeRight.rotation += this.solidCubeRight.rotationSpeed.rad * elapsed;
             this.solidCubeLeft.rotation += this.solidCubeLeft.rotationSpeed.rad * elapsed;
             this.solidSphere.rotation += this.solidSphere.rotationSpeed.rad * elapsed;
         }
