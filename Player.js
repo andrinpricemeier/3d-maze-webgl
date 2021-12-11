@@ -1,4 +1,4 @@
-class Player {
+export class Player {
   constructor(startCell, camera) {
     this.currentCell = startCell;
     this.camera = camera;
@@ -36,6 +36,7 @@ class Player {
 
     this.hookupEventListeners();
     this.camera.setPosition(this.currentCell.column, 0, this.currentCell.row);
+    this.camera.draw();
   }
 
   //Regelmässig
@@ -56,6 +57,7 @@ class Player {
   }
 
   move(direction) {
+    console.log(this.currentCell);
     // Move
     if (direction === this.direction.UP) {
       this.currentCell = this.currentCell.north;
@@ -66,7 +68,9 @@ class Player {
     } else if (direction === this.direction.LEFT) {
       this.currentCell = this.currentCell.west;
     }
-    this.camera.setPosition(this.currentCell.column, 0, this.currentCell.row);
+    // this.camera.setPosition(this.currentCell.column, 0, this.currentCell.row);
+    this.camera.setPosition(this.currentCell.column, this.currentCell.row);
+    this.camera.draw();
   }
 
   rotate(rotation) {

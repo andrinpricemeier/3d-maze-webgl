@@ -1,4 +1,5 @@
-import {Cell} from "./cell.js";
+import { Cell } from "./cell.js";
+import { Wall } from './Wall.js';
 
 export class Maze {
   constructor(rows, columns) {
@@ -18,7 +19,7 @@ export class Maze {
     for (let rowIndex = 0; rowIndex < this.rows; rowIndex++) {
       const row = [];
       for (let columnIndex = 0; columnIndex < this.columns; columnIndex++) {
-        row.push(new Cell(rowIndex, columnIndex));
+        row.push(new Cell(rowIndex, columnIndex, this.rows, this.columns));
       }
       grid.push(row);
     }
@@ -33,6 +34,19 @@ export class Maze {
       }
     }
     return cells;
+  }
+
+  getWalls(gl, ctx, width, height, thickness) {
+    const lookup = new Map();
+    for (const cell of this.get_cells()) {
+      for (const wall of cell.getWalls(gl, ctx, width, height, thickness)) {
+        const key = `${wall.getCoordX()}.${wall.getCoordY()}.${wall.orientation}`;
+        if (!lookup.has(key)) {
+          lookup.set(key, wall);
+        }
+      }
+    }
+    return Array.from(lookup.values());
   }
 
   configure_cells() {
@@ -80,8 +94,11 @@ export class Maze {
           actual = new Cell(-1, -1);
         }
         let body = "   ";
-        if((player.currentCell.row  === cell.row) && (player.currentCell.column  === cell.column)){
-          body = " "+ player.getOrientationArrow() +" ";
+        if (
+          player.currentCell.row === cell.row &&
+          player.currentCell.column === cell.column
+        ) {
+          body = " " + player.getOrientationArrow() + " ";
         }
         const east_boundary = cell.linked(cell.east) ? " " : "|";
         body += east_boundary;
@@ -107,8 +124,8 @@ export class Maze {
     return this.grid[row][column];
   }
 
-  start_cell(){
-    return this.get_cell(0,0);
+  start_cell() {
+    return this.get_cell(this.rows - 1, 0);
   }
 
   random_cell() {

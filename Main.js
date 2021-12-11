@@ -6,6 +6,7 @@ import { Wall } from "./Wall.js";
 import { Floor } from './Floor.js';
 import { OrthographicProjection } from "./OrthographicProjection.js";
 import { SceneLightning } from "./SceneLightning.js";
+import { Player } from './Player.js';
 
 window.onload = main;
 
@@ -44,12 +45,6 @@ class Main {
       uModelMatrixId: -1,
       uModelNormalMatrix: -1,
     };
-
-    this.maze = new Maze(5, 5);
-    this.generator = new MazeGenerator();
-    this.generator.generate(this.maze);
-    console.log(this.maze.toString());
-
     this.startup();
   }
 
@@ -109,15 +104,16 @@ class Main {
     textureRepo.loadAll(() => this.readyToDraw(textureRepo));
   }
 
-  readyToDraw(repo) {
+  readyToDraw(repo) {   
+    this.maze = new Maze(5, 5);
+    this.generator = new MazeGenerator();
+    this.generator.generate(this.maze);
+    console.log(this.maze.toString());
     const lights = new SceneLightning();
     lights.setup(this.gl, this.ctx.shaderProgram);
     const camera = new Camera(this.gl, this.ctx.shaderProgram);
-    camera.draw();
-    /*const projection = new PerspectiveProjection(
-      this.gl,
-      this.ctx.shaderProgram
-    );*/
+    const player = new Player(this.maze.start_cell(), camera);
+    player.move(0);
     const projection = new OrthographicProjection(
       this.gl,
       this.ctx.shaderProgram
@@ -125,17 +121,15 @@ class Main {
     projection.draw();
     const wall = repo.get("wall");
     wall.activate();
-    const NUM_Y = 5;
-    const NUM_X = 5;
-    const floor = new Floor(this.gl, this.ctx, NUM_X * 1 + NUM_X * 10, NUM_X * 1 + NUM_X * 10, 2);
+    const WIDTH = 10;
+    const HEIGHT = 10;
+    const THICKNESS = 2;
+    const floorWidth = (this.maze.columns + 1) * THICKNESS + this.maze.columns * WIDTH;
+    const floorHeight = (this.maze.rows + 1) * THICKNESS + this.maze.rows * HEIGHT;
+    const floor = new Floor(this.gl, this.ctx, floorWidth, floorHeight, THICKNESS);
     floor.draw();
-    for (let y = 0; y < NUM_Y; y++) {
-      for (let x = 0; x < NUM_X; x++) {
-        const wall1 = new Wall(this.gl, this.ctx, 10, 10, 2, x, y, "horizontal");
-        wall1.draw();
-        const wall2 = new Wall(this.gl, this.ctx, 10, 10, 2, x, y, "vertical");
-        wall2.draw();
-      }
+    for (const wall of this.maze.getWalls(this.gl, this.ctx, WIDTH, HEIGHT, THICKNESS)) {
+      wall.draw();
     }
   }
 }
