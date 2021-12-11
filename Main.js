@@ -102,9 +102,8 @@ class Main {
   draw() {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     this.textureRepo = new TextureRepository(this.gl, this.ctx.shaderProgram);
-    this.textureRepo.add("lena", "textures/lena512.png");
     this.textureRepo.add("wall", "textures/wall.png");
-    this.textureRepo.add("grass", "textures/grass.png");
+    this.textureRepo.add("floor", "textures/floor.png");
     this.textureRepo.loadAll(() => this.readyToDraw(this.textureRepo));
   }
 
@@ -133,10 +132,10 @@ class Main {
     for (const wall of this.walls) {
       wall.draw();
     }
-    const grassTexture = this.textureRepo.get("grass");
-    grassTexture.activate();
+    const floorTexture = this.textureRepo.get("floor");
+    floorTexture.activate();
     this.floor.draw();
-    grassTexture.deactivate();
+    floorTexture.deactivate();
     this.player.draw(lagFix);
   }
 
