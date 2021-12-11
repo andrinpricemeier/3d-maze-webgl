@@ -23,7 +23,8 @@ function createGLContext(canvas) {
 		alert("Failed to create GL context");
 	}
 	// wrap the context to a debug context to get error messages
-	return WebGLDebugUtils.makeDebugContext(context);
+	//return WebGLDebugUtils.makeDebugContext(context);
+	return context;
 }
 
 
