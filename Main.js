@@ -127,7 +127,6 @@ class Main {
   render(lagFix) {    
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     this.lights.setup(this.gl, this.ctx.shaderProgram);
-    this.player.draw();
     this.projection.draw();
     const wallTexture = this.textureRepo.get("wall");
     wallTexture.activate();
@@ -137,6 +136,8 @@ class Main {
     const grassTexture = this.textureRepo.get("grass");
     grassTexture.activate();
     this.floor.draw();
+    grassTexture.deactivate();
+    this.player.draw(lagFix);
   }
 
   readyToDraw(repo) {   
@@ -146,7 +147,7 @@ class Main {
     console.log(this.maze.toString());
     this.lights = new SceneLightning();
     this.camera = new Camera(this.gl, this.ctx.shaderProgram);
-    this.player = new Player(this.maze.start_cell(), this.camera);
+    this.player = new Player(this.gl, this.ctx, this.maze.start_cell(), this.camera);
     this.projection = new OrthographicProjection(
       this.gl,
       this.ctx.shaderProgram

@@ -1,5 +1,9 @@
+import { SolidCube } from './objects/SolidCube.js';
+
 export class Player {
-  constructor(startCell, camera) {
+  constructor(gl, ctx, startCell, camera) {
+    this.gl = gl;
+    this.ctx = ctx;
     this.currentCell = startCell;
     this.camera = camera;
     this.pressed = {};
@@ -33,6 +37,17 @@ export class Player {
       CLOCKWISE: 1,
       COUNTERCLOCKWISE: 2,
     };
+    this.angle = 0;
+    this.cube = SolidCube(
+      this.gl,
+      [1.0, 0.0, 0.0],
+      [0.0, 1.0, 0.0],
+      [0.0, 0.0, 1.0],
+      [1.0, 1.0, 0.0],
+      [0.0, 1.0, 1.0],
+      [1.0, 0.0, 1.0]
+    );
+    this.angularSpeed = (0.2 * 2 * Math.PI) / 360.0;
     this.hookupEventListeners();
   }
 
@@ -53,6 +68,12 @@ export class Player {
     }*/
     
     this.camera.setPosition(this.currentCell.wall_x, this.currentCell.wall_y);
+
+    
+    this.angle += this.angularSpeed;
+    if (this.angle > 2.0 * Math.PI) {
+      this.angle -= 2.0 * Math.PI;
+    }
   }
 
   move(direction) {
@@ -136,7 +157,34 @@ export class Player {
   }
 
   draw(lagFix) {
-    this.camera.draw();
+    this.angle += lagFix * this.angularSpeed;
+    if (this.angle > 2.0 * Math.PI) {
+      this.angle -= 2.0 * Math.PI;
+    }
+    this.camera.draw();    
+    const modelMatrix = mat4.create();
+    const new_x = 2 + (this.currentCell.wall_x + 1) * 2 + this.currentCell.wall_x * 10 + 3;
+    const new_y = 2 + (this.currentCell.wall_y + 1) * 2 + this.currentCell.wall_y * 10 + 3;
+    mat4.translate(modelMatrix, modelMatrix, [new_x, new_y, -5]);    
+    mat4.rotate(modelMatrix, modelMatrix, this.angle, [0, 1, 0]);
+    mat4.scale(modelMatrix, modelMatrix, [
+      4, 4, 4
+    ]);
+    this.gl.uniformMatrix4fv(this.ctx.uModelMatrixId, false, modelMatrix);
+    const normalMatrix = mat3.create();
+    mat3.normalFromMat4(normalMatrix, modelMatrix);
+    this.gl.uniformMatrix3fv(
+      this.ctx.uModelNormalMatrixId,
+      false,
+      normalMatrix
+    );
+    this.cube.draw(
+      this.gl,
+      this.ctx.aVertexPositionId,
+      this.ctx.aVertexColorId,
+      this.ctx.aVertexTextureCoordId,
+      this.ctx.aVertexNormalId
+    );
   }
 
   hookupEventListeners() {

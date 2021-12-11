@@ -6,6 +6,14 @@ export class Texture {
     this.textureObj = textureObj;
   }
 
+  deactivate() {    
+    const enableTexture = this.gl.getUniformLocation(
+      this.shaderProgram,
+      "uEnableTexture"
+    );
+    this.gl.uniform1i(enableTexture, 0);
+  }
+
   activate() {
     const enableTexture = this.gl.getUniformLocation(
       this.shaderProgram,
