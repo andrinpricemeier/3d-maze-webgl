@@ -11,6 +11,8 @@ export class Cell {
     this.south = null;
     this.east = null;
     this.west = null;
+    this.wall_x = this.column;
+    this.wall_y = this.num_rows - this.row - 1;
   }
 
   getWalls(gl, ctx, width, height, thickness) {

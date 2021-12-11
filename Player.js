@@ -33,14 +33,11 @@ export class Player {
       CLOCKWISE: 1,
       COUNTERCLOCKWISE: 2,
     };
-
     this.hookupEventListeners();
-    this.camera.setPosition(this.currentCell.column, 0, this.currentCell.row);
-    this.camera.draw();
   }
 
   //Regelmässig
-  updatePosition(elapsed) {
+  update() {
     //direction = getDirection
     const direction = this.getDirection();
     const rotation = this.getRotation();
@@ -51,13 +48,14 @@ export class Player {
       }
     }
 
-    if (rotation !== -1) {
+    /*if (rotation !== -1) {
       this.rotate(rotation);
-    }
+    }*/
+    
+    this.camera.setPosition(this.currentCell.wall_x, this.currentCell.wall_y);
   }
 
   move(direction) {
-    console.log(this.currentCell);
     // Move
     if (direction === this.direction.UP) {
       this.currentCell = this.currentCell.north;
@@ -68,9 +66,6 @@ export class Player {
     } else if (direction === this.direction.LEFT) {
       this.currentCell = this.currentCell.west;
     }
-    // this.camera.setPosition(this.currentCell.column, 0, this.currentCell.row);
-    this.camera.setPosition(this.currentCell.column, this.currentCell.row);
-    this.camera.draw();
   }
 
   rotate(rotation) {
@@ -82,12 +77,10 @@ export class Player {
       this.camera.rotateCounterClockwise();
     }
     this.camera.setPosition(this.currentCell.column, 0, this.currentCell.row);
-
-    //this.camera.setPosition(this.currentCell.column, this.currentCell.row, 0);
   }
 
   getDirection() {
-    if (this.isDown(this.key.UP)) {
+    /*if (this.isDown(this.key.W)) {
       return (this.direction.UP + this.camera.orientation) % 4;
     } else if (this.isDown(this.key.RIGHT)) {
       return (this.direction.RIGHT + this.camera.orientation) % 4;
@@ -95,6 +88,15 @@ export class Player {
       return (this.direction.DOWN + this.camera.orientation) % 4;
     } else if (this.isDown(this.key.LEFT)) {
       return (this.direction.LEFT + this.camera.orientation) % 4;
+    }*/
+    if (this.isDown(this.key.W)) {
+      return this.direction.UP;
+    } else if (this.isDown(this.key.D)) {
+      return this.direction.RIGHT;
+    } else if (this.isDown(this.key.S)) {
+      return this.direction.DOWN;
+    } else if (this.isDown(this.key.A)) {
+      return this.direction.LEFT;
     }
     return -1;
   }
@@ -133,7 +135,9 @@ export class Player {
     }
   }
 
-  draw(gl) {}
+  draw(lagFix) {
+    this.camera.draw();
+  }
 
   hookupEventListeners() {
     window.addEventListener("keydown", this.onKeydown, false);

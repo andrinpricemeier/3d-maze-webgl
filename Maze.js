@@ -5,7 +5,6 @@ export class Maze {
   constructor(rows, columns) {
     this.rows = rows;
     this.columns = columns;
-    console.log("Init Maze");
     this.grid = this.prepare_grid();
     this.configure_cells();
   }

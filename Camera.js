@@ -31,11 +31,8 @@ export class Camera {
     this.view.center.x = this.view.eye.x + this.direction.x;
     this.view.center.y = this.view.eye.y + this.direction.y;
     this.view.center.z = this.view.eye.z + this.direction.z;
-    console.log(this.view);
     this.coord_x = x;
     this.coord_y = y;
-    console.log(x);
-    console.log(y);
   }
 
   getDirection() {

@@ -102,8 +102,6 @@ class SolidSphere {
             }
         }
 
-        console.log(vertexIndices.length);
-
         var buffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, buffer);
         this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(vertexIndices), this.gl.STATIC_DRAW);
