@@ -51,7 +51,8 @@ export class Camera {
 
   draw() {
     const viewMatrix = mat4.create();
-    mat4.lookAt(viewMatrix, [0, 0, 10], [0, 0, 0], [0, 1, 0]);
+    //mat4.lookAt(viewMatrix, [7, 7, -5], [7, 10, -5], [0, 0, 1]);
+    mat4.lookAt(viewMatrix, [7, 0, 15], [7, 7, 0], [0, 0, 1]);
     const matrixId = this.gl.getUniformLocation(this.shaderProgram, "uViewMatrix");
     this.gl.uniformMatrix4fv(matrixId, false, viewMatrix);
     const normalMatrix = mat3.create();

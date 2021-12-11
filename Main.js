@@ -2,8 +2,8 @@ import { Maze } from "./maze.js";
 import { MazeGenerator } from "./MazeGenerator.js";
 import { TextureRepository } from "./TextureRepository.js";
 import { Camera } from "./Camera.js";
-import { SolidCube } from "./objects/SolidCube.js";
-import { PerspectiveProjection } from "./PerspectiveProjection.js";
+import { Wall } from "./Wall.js";
+import { OrthographicProjection } from "./OrthographicProjection.js";
 import { SceneLightning } from "./SceneLightning.js";
 
 window.onload = main;
@@ -104,7 +104,7 @@ class Main {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     const textureRepo = new TextureRepository(this.gl, this.ctx.shaderProgram);
     textureRepo.add("lena", "textures/lena512.png");
-    textureRepo.add("broken_wall_1", "textures/wall_broken_1.png");
+    textureRepo.add("wall", "textures/wall.png");
     textureRepo.loadAll(() => this.readyToDraw(textureRepo));
   }
 
@@ -113,30 +113,26 @@ class Main {
     lights.setup(this.gl, this.ctx.shaderProgram);
     const camera = new Camera(this.gl, this.ctx.shaderProgram);
     camera.draw();
-    const projection = new PerspectiveProjection(
+    /*const projection = new PerspectiveProjection(
+      this.gl,
+      this.ctx.shaderProgram
+    );*/
+    const projection = new OrthographicProjection(
       this.gl,
       this.ctx.shaderProgram
     );
     projection.draw();
-    const brokenWall = repo.get("broken_wall_1");
-    brokenWall.activate();
-    const cube = SolidCube(
-      this.gl,
-      [1.0, 0.0, 0.0],
-      [0.0, 1.0, 0.0],
-      [0.0, 0.0, 1.0],
-      [1.0, 0.0, 0.0],
-      [0.0, 1.0, 0.0],
-      [0.0, 0.0, 1.0]
-    );
-    cube.draw(
-      this.gl,
-      this.ctx.aVertexPositionId,
-      this.ctx.aVertexColorId,
-      this.ctx.aVertexTextureCoordId,
-      this.ctx.aVertexNormalId,
-      this.ctx.uModelMatrixId,
-      this.ctx.uModelNormalMatrixId
-    );
+    const wall = repo.get("wall");
+    wall.activate();
+    const NUM_Y = 5;
+    const NUM_X = 5;
+    for (let y = 0; y < NUM_Y; y++) {
+      for (let x = 0; x < NUM_X; x++) {
+        const wall1 = new Wall(this.gl, this.ctx, 10, 10, 2, x, y, "horizontal");
+        wall1.draw();
+        const wall2 = new Wall(this.gl, this.ctx, 10, 10, 2, x, y, "vertical");
+        wall2.draw();
+      }
+    }
   }
 }

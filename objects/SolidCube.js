@@ -308,18 +308,8 @@ export function SolidCube(
       aVertexPositionId,
       aVertexColorId,
       aVertexTextureCoordId,
-      aVertexNormalId,
-      uModelMatrixId,
-      normalMatrixId
+      aVertexNormalId
     ) {
-      const modelMatrix = mat4.create();
-      mat4.translate(modelMatrix, modelMatrix, [-2, 0, 0]);
-      mat4.scale(modelMatrix, modelMatrix, [2, 2, 2]);
-      gl.uniformMatrix4fv(uModelMatrixId, false, modelMatrix);
-      const normalMatrix = mat3.create();
-      mat3.normalFromMat4(normalMatrix, modelMatrix);
-      gl.uniformMatrix3fv(normalMatrixId, false, normalMatrix);
-
       // position
       gl.bindBuffer(gl.ARRAY_BUFFER, this.bufferVertices);
       gl.vertexAttribPointer(aVertexPositionId, 3, gl.FLOAT, false, 0, 0);
