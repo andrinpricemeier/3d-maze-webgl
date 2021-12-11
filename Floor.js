@@ -1,20 +1,43 @@
-class Floor {
-  constructor(width, height, thickness, vertexPositionId) {
+import { SolidCube } from "./objects/SolidCube.js";
+export class Floor {
+  constructor(gl, ctx, width, height, thickness) {
     this.width = width;
     this.height = height;
     this.thickness = thickness;
-    this.vertexPositionId = vertexPositionId;
+    this.gl = gl;
+    this.ctx = ctx;
+    this.cube = SolidCube(
+      this.gl,
+      [1.0, 0.0, 0.0],
+      [0.0, 1.0, 0.0],
+      [0.0, 0.0, 1.0],
+      [1.0, 1.0, 0.0],
+      [0.0, 1.0, 1.0],
+      [1.0, 0.0, 1.0]
+    );
   }
 
-  draw(gl) {
-    var vertices = [
-      0, 0, 0.2, 0, 0.2, 0.2, 0, 0.2, 0.5, 0, 0.6, 0, 0.6, 0.3, 0.5, 0.3,
-    ];
-    const buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-    gl.vertexAttribPointer(this.vertexPositionId, 2, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(this.vertexPositionId);
-    gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+  draw() {
+    const modelMatrix = mat4.create();
+    mat4.translate(modelMatrix, modelMatrix, [this.width/2, this.height/2, -(this.thickness/2 + 10)]);
+    mat4.scale(modelMatrix, modelMatrix, [
+      this.width, this.height, this.thickness
+    ]);
+    this.gl.uniformMatrix4fv(this.ctx.uModelMatrixId, false, modelMatrix);
+    const normalMatrix = mat3.create();
+    mat3.normalFromMat4(normalMatrix, modelMatrix);
+    this.gl.uniformMatrix3fv(
+      this.ctx.uModelNormalMatrixId,
+      false,
+      normalMatrix
+    );
+
+    this.cube.draw(
+      this.gl,
+      this.ctx.aVertexPositionId,
+      this.ctx.aVertexColorId,
+      this.ctx.aVertexTextureCoordId,
+      this.ctx.aVertexNormalId
+    );
   }
 }

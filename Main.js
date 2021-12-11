@@ -3,6 +3,7 @@ import { MazeGenerator } from "./MazeGenerator.js";
 import { TextureRepository } from "./TextureRepository.js";
 import { Camera } from "./Camera.js";
 import { Wall } from "./Wall.js";
+import { Floor } from './Floor.js';
 import { OrthographicProjection } from "./OrthographicProjection.js";
 import { SceneLightning } from "./SceneLightning.js";
 
@@ -126,6 +127,8 @@ class Main {
     wall.activate();
     const NUM_Y = 5;
     const NUM_X = 5;
+    const floor = new Floor(this.gl, this.ctx, NUM_X * 1 + NUM_X * 10, NUM_X * 1 + NUM_X * 10, 2);
+    floor.draw();
     for (let y = 0; y < NUM_Y; y++) {
       for (let x = 0; x < NUM_X; x++) {
         const wall1 = new Wall(this.gl, this.ctx, 10, 10, 2, x, y, "horizontal");
