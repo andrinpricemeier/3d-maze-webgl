@@ -132,6 +132,9 @@ class Main {
     for (const wall of this.walls) {
       wall.draw();
     }
+    for (const pillar of this.pillars) {
+      pillar.draw();
+    }
     const floorTexture = this.textureRepo.get("floor");
     floorTexture.activate();
     this.floor.draw();
@@ -157,7 +160,8 @@ class Main {
     const floorWidth = (this.maze.columns + 1) * THICKNESS + this.maze.columns * WIDTH;
     const floorHeight = (this.maze.rows + 1) * THICKNESS + this.maze.rows * HEIGHT;
     this.floor = new Floor(this.gl, this.ctx, floorWidth, floorHeight, THICKNESS);
-    this.walls = this.maze.getWalls(this.gl, this.ctx, WIDTH, HEIGHT, THICKNESS);    
+    this.walls = this.maze.getWalls(this.gl, this.ctx, WIDTH, HEIGHT, THICKNESS);
+    this.pillars = this.maze.getPillars(this.gl, this.ctx, THICKNESS, HEIGHT, THICKNESS, WIDTH);
     window.requestAnimationFrame(current => this.drawAnimated(current));
   }
 }

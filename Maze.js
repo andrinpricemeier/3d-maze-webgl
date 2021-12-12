@@ -1,5 +1,6 @@
 import { Cell } from "./cell.js";
 import { Wall } from './Wall.js';
+import { Pillar } from './Pillar.js';
 
 export class Maze {
   constructor(rows, columns) {
@@ -33,6 +34,16 @@ export class Maze {
       }
     }
     return cells;
+  }
+
+  getPillars(gl, ctx, width, height, thickness, wallWidth) {
+    const pillars = [];
+    for (let rowIndex = 0; rowIndex <= this.rows; rowIndex++) {
+      for (let columnIndex = 0; columnIndex <= this.columns; columnIndex++) {
+        pillars.push(new Pillar(gl, ctx, width, height, thickness, columnIndex, rowIndex, wallWidth));
+      }
+    }
+    return pillars;
   }
 
   getWalls(gl, ctx, width, height, thickness) {
