@@ -1,3 +1,5 @@
+import { shuffle } from './utils.js';
+
 class RowState {
   constructor(starting_set) {
     this.next_set = starting_set;
@@ -43,26 +45,6 @@ class RowState {
 }
 
 export class MazeGenerator {
-  shuffle(array) {
-    let currentIndex = array.length,
-      randomIndex;
-
-    // While there remain elements to shuffle...
-    while (currentIndex != 0) {
-      // Pick a remaining element...
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-
-      // And swap it with the current element.
-      [array[currentIndex], array[randomIndex]] = [
-        array[randomIndex],
-        array[currentIndex],
-      ];
-    }
-
-    return array;
-  }
-
   generate(grid) {
     let rowState = new RowState(0);
     for (const row of grid.getRows()) {  
@@ -85,7 +67,7 @@ export class MazeGenerator {
         for (const entry of rowState.each_set()) {
           const set = entry[0];
           const cells = entry[1];
-          const shuffled = this.shuffle(cells);
+          const shuffled = shuffle(cells);
           for (let i = 0; i < shuffled.length; i++) {
             if (i === 0 || Math.floor(Math.random() * 3) === 0) {
               shuffled[i].link(shuffled[i].south, true);

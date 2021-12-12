@@ -8,6 +8,7 @@ import { OrthographicProjection } from "./OrthographicProjection.js";
 import { SceneLightning } from "./SceneLightning.js";
 import { Player } from './Player.js';
 import { BirdsEyeView } from './BirdsEyeView.js';
+import { shuffle } from './utils.js';
 
 window.onload = main;
 
@@ -156,9 +157,10 @@ class Main {
     const floorTexture = this.textureRepo.get("floor");
     const wallTexture = this.textureRepo.get("wall");
     const allWalls = this.walls.length;
+    const shuffleWalls = shuffle(this.walls);
     for (let wallIndex = 0; wallIndex < allWalls; wallIndex++) {
       let i = 0;
-      for (const wall of this.walls) {
+      for (const wall of shuffleWalls) {
         if (i > wallIndex) {
           break;
         }
