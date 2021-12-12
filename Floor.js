@@ -1,9 +1,10 @@
 import { SolidCube } from "./objects/SolidCube.js";
 export class Floor {
-  constructor(gl, ctx, width, height, thickness) {
+  constructor(gl, ctx, width, height, thickness, wallHeight) {
     this.width = width;
     this.height = height;
     this.thickness = thickness;
+    this.wallHeight = wallHeight;
     this.gl = gl;
     this.ctx = ctx;
     this.cube = SolidCube(
@@ -19,7 +20,7 @@ export class Floor {
 
   draw() {
     const modelMatrix = mat4.create();
-    mat4.translate(modelMatrix, modelMatrix, [this.width/2, this.height/2, -(this.thickness/2 + 10)]);
+    mat4.translate(modelMatrix, modelMatrix, [this.width/2, this.height/2, -(this.thickness/2 + this.wallHeight)]);
     mat4.scale(modelMatrix, modelMatrix, [
       this.width, this.height, this.thickness
     ]);

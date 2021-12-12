@@ -196,7 +196,7 @@ class Main {
     this.player = new Player(this.gl, this.ctx, this.maze.start_cell(), WIDTH, THICKNESS);
     const floorWidth = (this.maze.columns + 1) * THICKNESS + this.maze.columns * WIDTH;
     const floorHeight = (this.maze.rows + 1) * THICKNESS + this.maze.rows * HEIGHT;
-    this.floor = new Floor(this.gl, this.ctx, floorWidth, floorHeight, THICKNESS);
+    this.floor = new Floor(this.gl, this.ctx, floorWidth, floorHeight, THICKNESS, HEIGHT);
     this.walls = this.maze.getWalls(this.gl, this.ctx, WIDTH, HEIGHT, THICKNESS);
     this.pillars = this.maze.getPillars(this.gl, this.ctx, THICKNESS, HEIGHT, THICKNESS, WIDTH);
     await this.showMazeBuilderProgress(floorWidth, floorHeight, 150, 2000);
