@@ -7,6 +7,7 @@ import { Floor } from './Floor.js';
 import { OrthographicProjection } from "./OrthographicProjection.js";
 import { SceneLightning } from "./SceneLightning.js";
 import { Player } from './Player.js';
+import { BirdsEyeView } from './BirdsEyeView.js';
 
 window.onload = main;
 
@@ -141,7 +142,49 @@ class Main {
     this.player.draw(lagFix);
   }
 
-  readyToDraw(repo) {   
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async showMazeBuilderProgress(floorWidth, floorHeight, speedInMs, endWaitInMs) {
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+    const birdsEyeView = new BirdsEyeView(this.gl, this.ctx, floorWidth, floorHeight);
+    birdsEyeView.update();
+    birdsEyeView.draw();
+    this.lights.setup(this.gl, this.ctx.shaderProgram);
+    const floorTexture = this.textureRepo.get("floor");
+    const wallTexture = this.textureRepo.get("wall");
+    const allWalls = this.walls.length;
+    for (let wallIndex = 0; wallIndex < allWalls; wallIndex++) {
+      let i = 0;
+      for (const wall of this.walls) {
+        if (i > wallIndex) {
+          break;
+        }
+        floorTexture.activate();
+        this.floor.draw();
+        wallTexture.activate();
+        wall.draw();
+        i++;
+      }
+      // Using async apparently confuses WebGL (?)
+      // That's why we draw incrementally.
+      await this.sleep(speedInMs);
+    }
+    floorTexture.activate();
+    this.floor.draw();
+    for (const wall of this.walls) {
+      wallTexture.activate();
+      wall.draw();
+    }
+    for (const pillar of this.pillars) {
+      pillar.draw();
+    }
+    floorTexture.deactivate();
+    await this.sleep(endWaitInMs);
+  }
+
+  async readyToDraw(repo) {   
     const WIDTH = 10;
     const HEIGHT = 10;
     const THICKNESS = 2;
@@ -156,6 +199,7 @@ class Main {
     this.floor = new Floor(this.gl, this.ctx, floorWidth, floorHeight, THICKNESS);
     this.walls = this.maze.getWalls(this.gl, this.ctx, WIDTH, HEIGHT, THICKNESS);
     this.pillars = this.maze.getPillars(this.gl, this.ctx, THICKNESS, HEIGHT, THICKNESS, WIDTH);
+    await this.showMazeBuilderProgress(floorWidth, floorHeight, 150, 2000);
     window.requestAnimationFrame(current => this.drawAnimated(current));
   }
 }
