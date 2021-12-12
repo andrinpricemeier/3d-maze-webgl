@@ -47,7 +47,7 @@ export class Player {
       [0.0, 1.0, 1.0],
       [1.0, 0.0, 1.0]
     );
-    this.angularSpeed = (0.2 * 2 * Math.PI) / 360.0;
+    this.angularSpeed = (0.5 * 2 * Math.PI) / 360.0;
     this.hookupEventListeners();
   }
 
