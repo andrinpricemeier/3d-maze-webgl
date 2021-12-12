@@ -205,7 +205,7 @@ class Main {
     this.floor = new Floor(this.gl, this.ctx, floorWidth, floorHeight, THICKNESS, HEIGHT);
     this.walls = this.maze.getWalls(this.gl, this.ctx, WIDTH, HEIGHT, THICKNESS);
     this.pillars = this.maze.getPillars(this.gl, this.ctx, THICKNESS, HEIGHT, THICKNESS, WIDTH);
-    await this.showMazeBuilderProgress(floorWidth, floorHeight, 25, 2000);
+    await this.showMazeBuilderProgress(floorWidth, floorHeight, 20, 2000);
     // Init for the normal draw cycle
     this.lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
     window.requestAnimationFrame(current => this.drawAnimated(current));
