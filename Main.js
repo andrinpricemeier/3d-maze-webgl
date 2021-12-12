@@ -188,7 +188,7 @@ class Main {
     const WIDTH = 10;
     const HEIGHT = 10;
     const THICKNESS = 2;
-    this.maze = new Maze(5, 5);
+    this.maze = new Maze(15, 15);
     this.generator = new MazeGenerator();
     this.generator.generate(this.maze);
     console.log(this.maze.toString());
@@ -199,7 +199,7 @@ class Main {
     this.floor = new Floor(this.gl, this.ctx, floorWidth, floorHeight, THICKNESS, HEIGHT);
     this.walls = this.maze.getWalls(this.gl, this.ctx, WIDTH, HEIGHT, THICKNESS);
     this.pillars = this.maze.getPillars(this.gl, this.ctx, THICKNESS, HEIGHT, THICKNESS, WIDTH);
-    await this.showMazeBuilderProgress(floorWidth, floorHeight, 150, 2000);
+    await this.showMazeBuilderProgress(floorWidth, floorHeight, 25, 2000);
     window.requestAnimationFrame(current => this.drawAnimated(current));
   }
 }
