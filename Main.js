@@ -126,7 +126,9 @@ class Main {
 
   render(lagFix) {    
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-    this.lights.setup(this.gl, this.ctx.shaderProgram);
+    // Lights always have to be set first because they build the basis for calculating the color of all pixels.
+    this.lights.setAmbientLight(1.3);
+    this.lights.draw();
     const wallTexture = this.textureRepo.get("wall");
     wallTexture.activate();
     for (const wall of this.walls) {
@@ -151,7 +153,6 @@ class Main {
     const birdsEyeView = new BirdsEyeView(this.gl, this.ctx, floorWidth, floorHeight);
     birdsEyeView.update();
     birdsEyeView.draw();
-    this.lights.setup(this.gl, this.ctx.shaderProgram);
     const floorTexture = this.textureRepo.get("floor");
     const wallTexture = this.textureRepo.get("wall");
     const allWalls = this.walls.length;
@@ -192,14 +193,19 @@ class Main {
     this.generator = new MazeGenerator();
     this.generator.generate(this.maze);
     console.log(this.maze.toString());
-    this.lights = new SceneLightning();
-    this.player = new Player(this.gl, this.ctx, this.maze.start_cell(), WIDTH, THICKNESS);
     const floorWidth = (this.maze.columns + 1) * THICKNESS + this.maze.columns * WIDTH;
     const floorHeight = (this.maze.rows + 1) * THICKNESS + this.maze.rows * HEIGHT;
+    this.lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
+    this.lights.setAmbientLight(1.0);
+    this.lights.addDiffuseLight([floorWidth / 2, floorHeight / 2, 15], [1.0, 0.0, 0.0], 1.0);
+    this.lights.draw();
+    this.player = new Player(this.gl, this.ctx, this.maze.start_cell(), WIDTH, THICKNESS);
     this.floor = new Floor(this.gl, this.ctx, floorWidth, floorHeight, THICKNESS, HEIGHT);
     this.walls = this.maze.getWalls(this.gl, this.ctx, WIDTH, HEIGHT, THICKNESS);
     this.pillars = this.maze.getPillars(this.gl, this.ctx, THICKNESS, HEIGHT, THICKNESS, WIDTH);
     await this.showMazeBuilderProgress(floorWidth, floorHeight, 25, 2000);
+    // Init for the normal draw cycle
+    this.lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
     window.requestAnimationFrame(current => this.drawAnimated(current));
   }
 }
