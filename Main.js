@@ -126,7 +126,6 @@ class Main {
   render(lagFix) {    
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     this.lights.setup(this.gl, this.ctx.shaderProgram);
-    this.projection.draw();
     const wallTexture = this.textureRepo.get("wall");
     wallTexture.activate();
     for (const wall of this.walls) {
@@ -143,20 +142,15 @@ class Main {
   }
 
   readyToDraw(repo) {   
+    const WIDTH = 10;
+    const HEIGHT = 10;
+    const THICKNESS = 2;
     this.maze = new Maze(5, 5);
     this.generator = new MazeGenerator();
     this.generator.generate(this.maze);
     console.log(this.maze.toString());
     this.lights = new SceneLightning();
-    this.camera = new Camera(this.gl, this.ctx.shaderProgram);
-    this.player = new Player(this.gl, this.ctx, this.maze.start_cell(), this.camera);
-    this.projection = new OrthographicProjection(
-      this.gl,
-      this.ctx.shaderProgram
-    );
-    const WIDTH = 10;
-    const HEIGHT = 10;
-    const THICKNESS = 2;
+    this.player = new Player(this.gl, this.ctx, this.maze.start_cell(), WIDTH, THICKNESS);
     const floorWidth = (this.maze.columns + 1) * THICKNESS + this.maze.columns * WIDTH;
     const floorHeight = (this.maze.rows + 1) * THICKNESS + this.maze.rows * HEIGHT;
     this.floor = new Floor(this.gl, this.ctx, floorWidth, floorHeight, THICKNESS);

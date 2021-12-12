@@ -35,6 +35,18 @@ export class Camera {
     this.coord_y = y;
   }
 
+  setCoordinates(eyeX, eyeY, eyeZ, centerX, centerY, centerZ, upX, upY, upZ) {
+    this.view.eye.x = eyeX;
+    this.view.eye.y = eyeY;
+    this.view.eye.z = eyeZ;
+    this.view.center.x = centerX;
+    this.view.center.y = centerY;
+    this.view.center.z = centerZ;
+    this.view.up.x = upX;
+    this.view.up.y = upY;
+    this.view.up.z = upZ;
+  }
+
   getDirection() {
     return {
       x: this.directions[this.orientation * 2],
@@ -56,7 +68,7 @@ export class Camera {
   draw() {
     const viewMatrix = mat4.create();
     //mat4.lookAt(viewMatrix, [0, 0, 5], [0, 0, 0], [0, 1, 0]);
-    mat4.lookAt(viewMatrix, [(this.coord_x + 1) * 2 + this.coord_x * 10 + 5, this.coord_y * 2 + this.coord_y * 10, 15], [(this.coord_x + 1) * 2 + this.coord_x * 10 + 5, (this.coord_y + 1) * 2 + this.coord_y * 10 + 5, 0], [0, 0, 1]);
+    mat4.lookAt(viewMatrix, [this.view.eye.x, this.view.eye.y, this.view.eye.z], [this.view.center.x, this.view.center.y, this.view.center.z], [this.view.up.x, this.view.up.y, this.view.up.z]);
     const matrixId = this.gl.getUniformLocation(this.shaderProgram, "uViewMatrix");
     this.gl.uniformMatrix4fv(matrixId, false, viewMatrix);
     const normalMatrix = mat3.create();

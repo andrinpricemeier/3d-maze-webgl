@@ -1,11 +1,11 @@
 import { SolidCube } from './objects/SolidCube.js';
+import { ThirdPersonView } from './ThirdPersonView.js';
 
 export class Player {
-  constructor(gl, ctx, startCell, camera) {
+  constructor(gl, ctx, startCell, wallWidth, wallThickness) {
     this.gl = gl;
     this.ctx = ctx;
     this.currentCell = startCell;
-    this.camera = camera;
     this.pressed = {};
     this.handled = {
       ArrowLeft: false,
@@ -47,6 +47,7 @@ export class Player {
       [0.0, 1.0, 1.0],
       [1.0, 0.0, 1.0]
     );
+    this.personView = new ThirdPersonView(gl, ctx, startCell, wallWidth, wallThickness);
     this.angularSpeed = (0.5 * 2 * Math.PI) / 360.0;
     this.hookupEventListeners();
   }
@@ -67,7 +68,7 @@ export class Player {
       this.rotate(rotation);
     }*/
     
-    this.camera.setPosition(this.currentCell.wall_x, this.currentCell.wall_y);
+    this.personView.update(this.currentCell);
 
     
     this.angle += this.angularSpeed;
@@ -93,11 +94,11 @@ export class Player {
     // Rotate
 
     if (rotation === this.rotation.CLOCKWISE) {
-      this.camera.rotateClockwise();
+      //this.camera.rotateClockwise();
     } else if (rotation === this.rotation.COUNTERCLOCKWISE) {
-      this.camera.rotateCounterClockwise();
+      //this.camera.rotateCounterClockwise();
     }
-    this.camera.setPosition(this.currentCell.column, 0, this.currentCell.row);
+    //this.camera.setPosition(this.currentCell.column, 0, this.currentCell.row);
   }
 
   getDirection() {
@@ -157,11 +158,12 @@ export class Player {
   }
 
   draw(lagFix) {
+    this.personView.draw();
     this.angle += lagFix * this.angularSpeed;
     if (this.angle > 2.0 * Math.PI) {
       this.angle -= 2.0 * Math.PI;
     }
-    this.camera.draw();    
+    //this.camera.draw();    
     const modelMatrix = mat4.create();
     const new_x = 2 + (this.currentCell.wall_x + 1) * 2 + this.currentCell.wall_x * 10 + 3;
     const new_y = 2 + (this.currentCell.wall_y + 1) * 2 + this.currentCell.wall_y * 10 + 3;
