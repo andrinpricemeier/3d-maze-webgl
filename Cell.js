@@ -76,7 +76,7 @@ export class Cell {
   }
 
   neighbours() {
-    list = [];
+    const list = [];
     if (this.north) {
       list.push(this.north);
     }
@@ -89,5 +89,6 @@ export class Cell {
     if (this.east) {
       list.push(this.east);
     }
+    return list;
   }
 }

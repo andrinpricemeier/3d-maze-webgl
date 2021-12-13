@@ -9,6 +9,8 @@ import { SceneLightning } from "./SceneLightning.js";
 import { Player } from './Player.js';
 import { BirdsEyeView } from './BirdsEyeView.js';
 import { shuffle } from './utils.js';
+import { RecursiveBacktracer } from './RecursiveBacktracker.js';
+import { Mask } from './Mask.js';
 
 window.onload = main;
 
@@ -106,6 +108,10 @@ class Main {
     this.textureRepo = new TextureRepository(this.gl, this.ctx.shaderProgram);
     this.textureRepo.add("wall", "textures/wall.png");
     this.textureRepo.add("floor", "textures/floor.png");
+    this.textureRepo.add("mask_g", "textures/mask_g.png");
+    this.textureRepo.add("mask_cg", "textures/mask_cg.png");
+    this.textureRepo.add("mask_abt", "textures/mask_abt.png");
+    this.textureRepo.add("mask_rose", "textures/mask_rose.png");
     this.textureRepo.loadAll(() => this.readyToDraw(this.textureRepo));
   }
 
@@ -191,21 +197,39 @@ class Main {
     const WIDTH = 10;
     const HEIGHT = 10;
     const THICKNESS = 2;
-    this.maze = new Maze(15, 15);
+    const MAZE_DIM = 25;
+    const mask = new Mask(MAZE_DIM, MAZE_DIM);
+    const img = this.textureRepo.get("mask_rose").img;
+    console.log(img);
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height);
+    for (let rowIndex = 0; rowIndex < MAZE_DIM; rowIndex++) {
+      for (let colIndex = 0; colIndex < MAZE_DIM; colIndex++) {
+        const pixel = canvas.getContext('2d').getImageData(colIndex, rowIndex, 1, 1).data;
+        if (pixel[0] === 0 && pixel[1] === 0 && pixel[2] === 0) {
+          mask.setIsOn(rowIndex, colIndex, false);
+        }
+      }
+    }
+    this.maze = new Maze(MAZE_DIM, MAZE_DIM, mask);
     this.generator = new MazeGenerator();
-    this.generator.generate(this.maze);
+    //this.generator.generate(this.maze);
+    const backtracker = new RecursiveBacktracer();
+    backtracker.on(this.maze);
     console.log(this.maze.toString());
     const floorWidth = (this.maze.columns + 1) * THICKNESS + this.maze.columns * WIDTH;
     const floorHeight = (this.maze.rows + 1) * THICKNESS + this.maze.rows * HEIGHT;
     this.lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
     this.lights.setAmbientLight(1.0);
-    this.lights.addDiffuseLight([floorWidth / 2, floorHeight / 2, 15], [1.0, 0.0, 0.0], 1.0);
+    //this.lights.addDiffuseLight([floorWidth / 2, floorHeight / 2, 15], [1.0, 0.0, 0.0], 1.0);
     this.lights.draw();
     this.player = new Player(this.gl, this.ctx, this.maze.start_cell(), WIDTH, THICKNESS);
     this.floor = new Floor(this.gl, this.ctx, floorWidth, floorHeight, THICKNESS, HEIGHT);
     this.walls = this.maze.getWalls(this.gl, this.ctx, WIDTH, HEIGHT, THICKNESS);
     this.pillars = this.maze.getPillars(this.gl, this.ctx, THICKNESS, HEIGHT, THICKNESS, WIDTH);
-    await this.showMazeBuilderProgress(floorWidth, floorHeight, 20, 2000);
+    await this.showMazeBuilderProgress(floorWidth, floorHeight, 20, 15000);
     // Init for the normal draw cycle
     this.lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
     window.requestAnimationFrame(current => this.drawAnimated(current));

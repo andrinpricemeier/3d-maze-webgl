@@ -1,11 +1,12 @@
 import { Cell } from "./cell.js";
-import { Wall } from './Wall.js';
-import { Pillar } from './Pillar.js';
+import { Wall } from "./Wall.js";
+import { Pillar } from "./Pillar.js";
 
 export class Maze {
-  constructor(rows, columns) {
+  constructor(rows, columns, mask) {
     this.rows = rows;
     this.columns = columns;
+    this.mask = mask;
     this.grid = this.prepare_grid();
     this.configure_cells();
   }
@@ -19,7 +20,11 @@ export class Maze {
     for (let rowIndex = 0; rowIndex < this.rows; rowIndex++) {
       const row = [];
       for (let columnIndex = 0; columnIndex < this.columns; columnIndex++) {
-        row.push(new Cell(rowIndex, columnIndex, this.rows, this.columns));
+        if (this.mask.getIsOn(rowIndex, columnIndex)) {
+          row.push(new Cell(rowIndex, columnIndex, this.rows, this.columns));
+        } else {
+          row.push(null);
+        }
       }
       grid.push(row);
     }
@@ -30,7 +35,9 @@ export class Maze {
     const cells = [];
     for (let rowIndex = 0; rowIndex < this.rows; rowIndex++) {
       for (let columnIndex = 0; columnIndex < this.columns; columnIndex++) {
-        cells.push(this.grid[rowIndex][columnIndex]);
+        if (this.grid[rowIndex][columnIndex]) {
+          cells.push(this.grid[rowIndex][columnIndex]);
+        }
       }
     }
     return cells;
@@ -40,7 +47,18 @@ export class Maze {
     const pillars = [];
     for (let rowIndex = 0; rowIndex <= this.rows; rowIndex++) {
       for (let columnIndex = 0; columnIndex <= this.columns; columnIndex++) {
-        pillars.push(new Pillar(gl, ctx, width, height, thickness, columnIndex, rowIndex, wallWidth));
+        pillars.push(
+          new Pillar(
+            gl,
+            ctx,
+            width,
+            height,
+            thickness,
+            columnIndex,
+            rowIndex,
+            wallWidth
+          )
+        );
       }
     }
     return pillars;
@@ -50,7 +68,9 @@ export class Maze {
     const lookup = new Map();
     for (const cell of this.get_cells()) {
       for (const wall of cell.getWalls(gl, ctx, width, height, thickness)) {
-        const key = `${wall.getCoordX()}.${wall.getCoordY()}.${wall.orientation}`;
+        const key = `${wall.getCoordX()}.${wall.getCoordY()}.${
+          wall.orientation
+        }`;
         if (!lookup.has(key)) {
           lookup.set(key, wall);
         }
@@ -73,10 +93,9 @@ export class Maze {
     for (const row of this.getRows()) {
       let top = "|";
       let bottom = "+";
-      for (const cell of row) {
-        let actual = cell;
+      for (let cell of row) {
         if (!cell) {
-          actual = new Cell(-1, -1);
+          cell = new Cell(-1, -1);
         }
         let body = "   ";
         const east_boundary = cell.linked(cell.east) ? " " : "|";
@@ -135,16 +154,15 @@ export class Maze {
   }
 
   start_cell() {
-    return this.get_cell(this.rows - 1, 0);
+    return this.random_cell();
   }
 
   random_cell() {
-    row = Math.floor(Math.random() * this.rows);
-    column = Math.floor(Math.random() * this.grid[row].length);
-    return this.get_cell(row, column);
+    const rand_location = this.mask.random_location();
+    return this.get_cell(rand_location[0], rand_location[1]);
   }
 
   size() {
-    return this.rows * this.columns;
+    return this.mask.count();
   }
 }
