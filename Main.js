@@ -3,14 +3,16 @@ import { MazeGenerator } from "./MazeGenerator.js";
 import { TextureRepository } from "./TextureRepository.js";
 import { Camera } from "./Camera.js";
 import { Wall } from "./Wall.js";
-import { Floor } from './Floor.js';
+import { Floor } from "./Floor.js";
 import { OrthographicProjection } from "./OrthographicProjection.js";
 import { SceneLightning } from "./SceneLightning.js";
-import { Player } from './Player.js';
-import { BirdsEyeView } from './BirdsEyeView.js';
-import { shuffle } from './utils.js';
-import { RecursiveBacktracer } from './RecursiveBacktracker.js';
-import { Mask } from './Mask.js';
+import { Player } from "./Player.js";
+import { BirdsEyeView } from "./BirdsEyeView.js";
+import { shuffle } from "./utils.js";
+import { RecursiveBacktracer } from "./RecursiveBacktracker.js";
+import { Mask } from "./Mask.js";
+import { Intro } from "./Intro.js";
+import { showMazeBuilderProgress } from "./utils.js";
 
 window.onload = main;
 
@@ -109,6 +111,9 @@ class Main {
     this.textureRepo.add("wall", "textures/wall.png");
     this.textureRepo.add("floor", "textures/floor.png");
     this.textureRepo.add("mask_g", "textures/mask_g.png");
+    this.textureRepo.add("mask_a", "textures/mask_a.png");
+    this.textureRepo.add("mask_b", "textures/mask_b.png");
+    this.textureRepo.add("mask_t", "textures/mask_t.png");
     this.textureRepo.add("mask_cg", "textures/mask_cg.png");
     this.textureRepo.add("mask_abt", "textures/mask_abt.png");
     this.textureRepo.add("mask_rose", "textures/mask_rose.png");
@@ -125,14 +130,14 @@ class Main {
       this.lag -= this.MS_PER_UPDATE;
     }
     this.render(this.lag / this.MS_PER_UPDATE);
-    window.requestAnimationFrame(current => this.drawAnimated(current));
+    window.requestAnimationFrame((current) => this.drawAnimated(current));
   }
 
   update() {
     this.player.update();
   }
 
-  render(lagFix) {    
+  render(lagFix) {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     // Lights always have to be set first because they build the basis for calculating the color of all pixels.
     this.lights.setAmbientLight(1.3);
@@ -152,49 +157,7 @@ class Main {
     this.player.draw(lagFix);
   }
 
-  sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  async showMazeBuilderProgress(floorWidth, floorHeight, speedInMs, endWaitInMs) {
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-    const birdsEyeView = new BirdsEyeView(this.gl, this.ctx, floorWidth, floorHeight);
-    birdsEyeView.update();
-    birdsEyeView.draw();
-    const floorTexture = this.textureRepo.get("floor");
-    const wallTexture = this.textureRepo.get("wall");
-    const allWalls = this.walls.length;
-    const shuffleWalls = shuffle(this.walls);
-    for (let wallIndex = 0; wallIndex < allWalls; wallIndex++) {
-      let i = 0;
-      for (const wall of shuffleWalls) {
-        if (i > wallIndex) {
-          break;
-        }
-        floorTexture.activate();
-        this.floor.draw();
-        wallTexture.activate();
-        wall.draw();
-        i++;
-      }
-      // Using async apparently confuses WebGL (?)
-      // That's why we draw incrementally.
-      await this.sleep(speedInMs);
-    }
-    floorTexture.activate();
-    this.floor.draw();
-    for (const wall of this.walls) {
-      wallTexture.activate();
-      wall.draw();
-    }
-    for (const pillar of this.pillars) {
-      pillar.draw();
-    }
-    floorTexture.deactivate();
-    await this.sleep(endWaitInMs);
-  }
-
-  async readyToDraw(repo) {   
+  async buildMainLevel() {
     const WIDTH = 10;
     const HEIGHT = 10;
     const THICKNESS = 2;
@@ -208,19 +171,68 @@ class Main {
     const backtracker = new RecursiveBacktracer();
     backtracker.on(this.maze);
     console.log(this.maze.toString());
-    const floorWidth = (this.maze.columns + 1) * THICKNESS + this.maze.columns * WIDTH;
-    const floorHeight = (this.maze.rows + 1) * THICKNESS + this.maze.rows * HEIGHT;
+    const floorWidth =
+      (this.maze.columns + 1) * THICKNESS + this.maze.columns * WIDTH;
+    const floorHeight =
+      (this.maze.rows + 1) * THICKNESS + this.maze.rows * HEIGHT;
     this.lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
     this.lights.setAmbientLight(1.0);
-    //this.lights.addDiffuseLight([floorWidth / 2, floorHeight / 2, 15], [1.0, 0.0, 0.0], 1.0);
+    this.lights.addDiffuseLight(
+      [floorWidth / 2, floorHeight / 2, 15],
+      [0.0, 1.0, 1.0],
+      1.0
+    );
     this.lights.draw();
-    this.player = new Player(this.gl, this.ctx, this.maze.start_cell(), WIDTH, THICKNESS);
-    this.floor = new Floor(this.gl, this.ctx, floorWidth, floorHeight, THICKNESS, HEIGHT);
-    this.walls = this.maze.getWalls(this.gl, this.ctx, WIDTH, HEIGHT, THICKNESS);
-    this.pillars = this.maze.getPillars(this.gl, this.ctx, THICKNESS, HEIGHT, THICKNESS, WIDTH);
-    await this.showMazeBuilderProgress(floorWidth, floorHeight, 20, 15000);
+    this.player = new Player(
+      this.gl,
+      this.ctx,
+      this.maze.start_cell(),
+      WIDTH,
+      THICKNESS
+    );
+    this.floor = new Floor(
+      this.gl,
+      this.ctx,
+      floorWidth,
+      floorHeight,
+      THICKNESS,
+      HEIGHT
+    );
+    this.walls = this.maze.getWalls(
+      this.gl,
+      this.ctx,
+      WIDTH,
+      HEIGHT,
+      THICKNESS
+    );
+    this.pillars = this.maze.getPillars(
+      this.gl,
+      this.ctx,
+      THICKNESS,
+      HEIGHT,
+      THICKNESS,
+      WIDTH
+    );
+    await showMazeBuilderProgress(
+      this.gl,
+      this.ctx,
+      this.textureRepo,
+      floorWidth,
+      floorHeight,
+      this.walls,
+      this.pillars,
+      this.floor,
+      15,
+      2000
+    );
+  }
+
+  async readyToDraw(repo) {
+    const intro = new Intro(this.gl, this.ctx, this.textureRepo);
+    await intro.play();
+    await this.buildMainLevel();
     // Init for the normal draw cycle
     this.lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
-    window.requestAnimationFrame(current => this.drawAnimated(current));
+    window.requestAnimationFrame((current) => this.drawAnimated(current));
   }
 }

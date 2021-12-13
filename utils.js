@@ -1,3 +1,5 @@
+import { BirdsEyeView } from "./BirdsEyeView.js";
+
 export function shuffle(array) {
   let currentIndex = array.length,
     randomIndex;
@@ -16,4 +18,62 @@ export function shuffle(array) {
   }
 
   return array;
+}
+
+export function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function showMazeBuilderProgress(
+  gl,
+  ctx,
+  textureRepo,
+  floorWidth,
+  floorHeight,
+  walls,
+  pillars,
+  floor,
+  speedInMs,
+  endWaitInMs
+) {
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  const birdsEyeView = new BirdsEyeView(
+    gl,
+    ctx,
+    floorWidth,
+    floorHeight
+  );
+  birdsEyeView.update();
+  birdsEyeView.draw();
+  const floorTexture = textureRepo.get("floor");
+  const wallTexture = textureRepo.get("wall");
+  const allWalls = walls.length;
+  const shuffleWalls = shuffle(walls);
+  for (let wallIndex = 0; wallIndex < allWalls; wallIndex++) {
+    let i = 0;
+    for (const wall of shuffleWalls) {
+      if (i > wallIndex) {
+        break;
+      }
+      floorTexture.activate();
+      floor.draw();
+      wallTexture.activate();
+      wall.draw();
+      i++;
+    }
+    // Using async apparently confuses WebGL (?)
+    // That's why we draw incrementally.
+    await sleep(speedInMs);
+  }
+  floorTexture.activate();
+  floor.draw();
+  for (const wall of walls) {
+    wallTexture.activate();
+    wall.draw();
+  }
+  for (const pillar of pillars) {
+    pillar.draw();
+  }
+  floorTexture.deactivate();
+  await sleep(endWaitInMs);
 }
