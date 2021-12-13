@@ -199,7 +199,7 @@ class Main {
     const THICKNESS = 2;
     const MAZE_DIM = 25;
     const mask = new Mask(MAZE_DIM, MAZE_DIM);
-    const img = this.textureRepo.get("mask_rose").img;
+    const img = this.textureRepo.get("mask_g").img;
     console.log(img);
     const canvas = document.createElement('canvas');
     canvas.width = img.width;
