@@ -112,6 +112,7 @@ class Main {
     this.textureRepo.add("mask_cg", "textures/mask_cg.png");
     this.textureRepo.add("mask_abt", "textures/mask_abt.png");
     this.textureRepo.add("mask_rose", "textures/mask_rose.png");
+    this.textureRepo.add("mask_bio", "textures/mask_bio.png");
     this.textureRepo.loadAll(() => this.readyToDraw(this.textureRepo));
   }
 
@@ -197,22 +198,10 @@ class Main {
     const WIDTH = 10;
     const HEIGHT = 10;
     const THICKNESS = 2;
-    const MAZE_DIM = 25;
+    const MAZE_DIM = 15;
     const mask = new Mask(MAZE_DIM, MAZE_DIM);
-    const img = this.textureRepo.get("mask_g").img;
-    console.log(img);
-    const canvas = document.createElement('canvas');
-    canvas.width = img.width;
-    canvas.height = img.height;
-    canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height);
-    for (let rowIndex = 0; rowIndex < MAZE_DIM; rowIndex++) {
-      for (let colIndex = 0; colIndex < MAZE_DIM; colIndex++) {
-        const pixel = canvas.getContext('2d').getImageData(colIndex, rowIndex, 1, 1).data;
-        if (pixel[0] === 0 && pixel[1] === 0 && pixel[2] === 0) {
-          mask.setIsOn(rowIndex, colIndex, false);
-        }
-      }
-    }
+    const img = this.textureRepo.get("mask_cg").img;
+    mask.loadFromImage(img);
     this.maze = new Maze(MAZE_DIM, MAZE_DIM, mask);
     this.generator = new MazeGenerator();
     //this.generator.generate(this.maze);
