@@ -1,14 +1,9 @@
-import { Maze } from "./maze.js";
+import { Maze } from "./Maze.js";
 import { MazeGenerator } from "./MazeGenerator.js";
 import { TextureRepository } from "./TextureRepository.js";
-import { Camera } from "./Camera.js";
-import { Wall } from "./Wall.js";
 import { Floor } from "./Floor.js";
-import { OrthographicProjection } from "./OrthographicProjection.js";
 import { SceneLightning } from "./SceneLightning.js";
 import { Player } from "./Player.js";
-import { BirdsEyeView } from "./BirdsEyeView.js";
-import { shuffle } from "./utils.js";
 import { RecursiveBacktracer } from "./RecursiveBacktracker.js";
 import { Mask } from "./Mask.js";
 import { Intro } from "./Intro.js";

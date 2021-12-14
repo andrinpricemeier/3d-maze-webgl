@@ -1,4 +1,4 @@
-import { Maze } from "./maze.js";
+import { Maze } from "./Maze.js";
 import { MazeGenerator } from "./MazeGenerator.js";
 import { Floor } from "./Floor.js";
 import { SceneLightning } from "./SceneLightning.js";

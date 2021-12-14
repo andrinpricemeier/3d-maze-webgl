@@ -1,5 +1,4 @@
-import { Cell } from "./cell.js";
-import { Wall } from "./Wall.js";
+import { Cell } from "./Cell.js";
 import { Pillar } from "./Pillar.js";
 
 export class Maze {
