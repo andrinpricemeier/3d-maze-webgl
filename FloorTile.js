@@ -1,9 +1,12 @@
 import { SolidCube } from "./objects/SolidCube.js";
-export class Floor {
-  constructor(gl, ctx, width, height, thickness, wallHeight) {
+export class FloorTile {
+  constructor(gl, ctx, width, height, thickness, coord_x, coord_y, wallThickness, wallHeight) {
     this.width = width;
     this.height = height;
     this.thickness = thickness;
+    this.coord_x = coord_x;
+    this.coord_y = coord_y;
+    this.wallThickness = wallThickness;
     this.wallHeight = wallHeight;
     this.gl = gl;
     this.ctx = ctx;
@@ -20,7 +23,12 @@ export class Floor {
 
   draw() {
     const modelMatrix = mat4.create();
-    mat4.translate(modelMatrix, modelMatrix, [this.width/2, this.height/2, -(this.thickness/2 + this.wallHeight)]);
+    const centered_x = this.width/2;
+    const start_x = centered_x + (this.coord_x + 1) * this.wallThickness + this.coord_x * this.width;
+    const centered_y = this.width/2;
+    const start_y = centered_y + (this.coord_y + 1) * this.wallThickness + this.coord_y * this.width;
+    const start_z = -(this.thickness/2 + this.wallHeight);
+    mat4.translate(modelMatrix, modelMatrix, [start_x, start_y, start_z]);
     mat4.scale(modelMatrix, modelMatrix, [
       this.width, this.height, this.thickness
     ]);

@@ -32,24 +32,24 @@ export class Cell {
     return this.column;
   }
 
-  getWalls(gl, ctx, width, height, thickness) {
+  getWalls(gl, ctx, width, height, thickness, offsetZ, mustBeLinked) {
     const walls = [];
     const wall_x = this.getViewColumn();
     const wall_y = this.getViewRow();
-    if (!this.isLinkedNorth()) {
-      const wall = new Wall(gl, ctx, width, height, thickness, wall_x, wall_y + 1, "horizontal");
+    if (!mustBeLinked || !this.isLinkedNorth()) {
+      const wall = new Wall(gl, ctx, width, height, thickness, wall_x, wall_y + 1, "horizontal", offsetZ);
       walls.push(wall);
     }
-    if (!this.isLinkedSouth()) {
-      const wall = new Wall(gl, ctx, width, height, thickness, wall_x, wall_y, "horizontal");
+    if (!mustBeLinked || !this.isLinkedSouth()) {
+      const wall = new Wall(gl, ctx, width, height, thickness, wall_x, wall_y, "horizontal", offsetZ);
       walls.push(wall);
     }
-    if (!this.isLinkedEast()) {
-      const wall = new Wall(gl, ctx, width, height, thickness, wall_x + 1, wall_y, "vertical");
+    if (!mustBeLinked || !this.isLinkedEast()) {
+      const wall = new Wall(gl, ctx, width, height, thickness, wall_x + 1, wall_y, "vertical", offsetZ);
       walls.push(wall);
     }
-    if (!this.isLinkedWest()) {
-      const wall = new Wall(gl, ctx, width, height, thickness, wall_x, wall_y, "vertical");
+    if (!mustBeLinked || !this.isLinkedWest()) {
+      const wall = new Wall(gl, ctx, width, height, thickness, wall_x, wall_y, "vertical", offsetZ);
       walls.push(wall);
     }
     return walls;

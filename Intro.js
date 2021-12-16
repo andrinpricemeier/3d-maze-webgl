@@ -1,6 +1,5 @@
 import { Maze } from "./Maze.js";
 import { MazeGenerator } from "./MazeGenerator.js";
-import { Floor } from "./Floor.js";
 import { SceneLightning } from "./SceneLightning.js";
 import { Player } from "./Player.js";
 import { RecursiveBacktracer } from "./RecursiveBacktracker.js";
@@ -65,20 +64,31 @@ export class Intro {
       WIDTH,
       THICKNESS
     );
-    this.floor = new Floor(
+    this.floorTiles = this.maze.getFloorTiles(
       this.gl,
       this.ctx,
-      floorWidth,
-      floorHeight,
+      WIDTH - 2 * THICKNESS,
+      WIDTH - 2 * THICKNESS,
       THICKNESS,
-      HEIGHT
-    );
+      THICKNESS,
+      HEIGHT);
     this.walls = this.maze.getWalls(
       this.gl,
       this.ctx,
       WIDTH,
       HEIGHT,
-      THICKNESS
+      THICKNESS,
+      0,
+      true
+    );
+    this.floorWalls = this.maze.getWalls(
+      this.gl,
+      this.ctx,
+      WIDTH,
+      THICKNESS,
+      THICKNESS,
+      HEIGHT,
+      false
     );
     this.pillars = this.maze.getPillars(
       this.gl,
@@ -96,7 +106,7 @@ export class Intro {
       floorHeight,
       this.walls,
       this.pillars,
-      this.floor,
+      this.floorTiles,
       15,
       2000
     );

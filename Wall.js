@@ -8,7 +8,8 @@ export class Wall {
     thickness,
     coord_x,
     coord_y,
-    orientation
+    orientation,
+    offsetZ
   ) {
     this.gl = gl;
     this.ctx = ctx;
@@ -18,6 +19,7 @@ export class Wall {
     this.coord_x = coord_x;
     this.coord_y = coord_y;
     this.orientation = orientation;
+    this.offsetZ = offsetZ;
     this.cube = SolidCube(
       this.gl,
       [1.0, 0.0, 0.0],
@@ -40,12 +42,12 @@ export class Wall {
   draw() {
     const modelMatrix = mat4.create();
     if (this.orientation === "vertical") {
-      mat4.translate(modelMatrix, modelMatrix, [this.thickness / 2 + this.coord_x * this.thickness + this.coord_x * this.width, this.width / 2 + (this.coord_y + 1) * this.thickness + this.coord_y * this.width, -(this.height / 2)]);
+      mat4.translate(modelMatrix, modelMatrix, [this.thickness / 2 + this.coord_x * this.thickness + this.coord_x * this.width, this.width / 2 + (this.coord_y + 1) * this.thickness + this.coord_y * this.width, -(this.height / 2 + this.offsetZ)]);
       mat4.scale(modelMatrix, modelMatrix, [
         this.thickness, this.width, this.height
       ]);
     } else {
-      mat4.translate(modelMatrix, modelMatrix, [this.width / 2 + (this.coord_x + 1) * this.thickness + this.coord_x * this.width, this.thickness / 2 + this.coord_y * this.thickness + this.coord_y * this.width, -(this.height / 2)]);
+      mat4.translate(modelMatrix, modelMatrix, [this.width / 2 + (this.coord_x + 1) * this.thickness + this.coord_x * this.width, this.thickness / 2 + this.coord_y * this.thickness + this.coord_y * this.width, -(this.height / 2 + this.offsetZ)]);
       mat4.scale(modelMatrix, modelMatrix, [
         this.width, this.thickness, this.height
       ]);

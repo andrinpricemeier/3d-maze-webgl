@@ -1,7 +1,6 @@
 import { Maze } from "./Maze.js";
 import { MazeGenerator } from "./MazeGenerator.js";
 import { TextureRepository } from "./TextureRepository.js";
-import { Floor } from "./Floor.js";
 import { SceneLightning } from "./SceneLightning.js";
 import { Player } from "./Player.js";
 import { RecursiveBacktracer } from "./RecursiveBacktracker.js";
@@ -105,14 +104,6 @@ class Main {
     this.textureRepo = new TextureRepository(this.gl, this.ctx.shaderProgram);
     this.textureRepo.add("wall", "textures/wall.png");
     this.textureRepo.add("floor", "textures/floor.png");
-    this.textureRepo.add("mask_g", "textures/mask_g.png");
-    this.textureRepo.add("mask_a", "textures/mask_a.png");
-    this.textureRepo.add("mask_b", "textures/mask_b.png");
-    this.textureRepo.add("mask_t", "textures/mask_t.png");
-    this.textureRepo.add("mask_cg", "textures/mask_cg.png");
-    this.textureRepo.add("mask_abt", "textures/mask_abt.png");
-    this.textureRepo.add("mask_rose", "textures/mask_rose.png");
-    this.textureRepo.add("mask_bio", "textures/mask_bio.png");
     this.textureRepo.loadAll(() => this.readyToDraw(this.textureRepo));
   }
 
@@ -147,10 +138,15 @@ class Main {
     }
     const floorTexture = this.textureRepo.get("floor");
     floorTexture.activate();
-    this.floor.draw();
+    for (const wall of this.floorWalls) {
+      wall.draw();
+    }
+    for (const floorTile of this.floorTiles) {
+      floorTile.draw();
+    }
     floorTexture.deactivate();
     this.player.draw(lagFix);
-    console.log(this.maze.toStringWithPlayer(this.player));
+    //console.log(this.maze.toStringWithPlayer(this.player));
   }
 
   async buildMainLevel() {
@@ -159,14 +155,14 @@ class Main {
     const THICKNESS = 2;
     const MAZE_DIM = 15;
     const mask = new Mask(MAZE_DIM, MAZE_DIM);
-    const img = this.textureRepo.get("mask_cg").img;
-    mask.loadFromImage(img);
+    //const img = this.textureRepo.get("mask_cg").img;
+    //mask.loadFromImage(img);
     this.maze = new Maze(MAZE_DIM, MAZE_DIM, mask);
     this.generator = new MazeGenerator();
     //this.generator.generate(this.maze);
     const backtracker = new RecursiveBacktracer();
     backtracker.on(this.maze);
-    console.log(this.maze.toString());
+    //console.log(this.maze.toString());
     const floorWidth =
       (this.maze.columns + 1) * THICKNESS + this.maze.columns * WIDTH;
     const floorHeight =
@@ -186,11 +182,12 @@ class Main {
       WIDTH,
       THICKNESS
     );
-    this.floor = new Floor(
+    this.floorTiles = this.maze.getFloorTiles(
       this.gl,
       this.ctx,
-      floorWidth,
-      floorHeight,
+      WIDTH,
+      WIDTH,
+      THICKNESS,
       THICKNESS,
       HEIGHT
     );
@@ -199,7 +196,18 @@ class Main {
       this.ctx,
       WIDTH,
       HEIGHT,
-      THICKNESS
+      THICKNESS,
+      0,
+      true
+    );
+    this.floorWalls = this.maze.getWalls(
+      this.gl,
+      this.ctx,
+      WIDTH,
+      THICKNESS,
+      THICKNESS,
+      HEIGHT,
+      false
     );
     this.pillars = this.maze.getPillars(
       this.gl,
@@ -218,7 +226,7 @@ class Main {
       floorHeight,
       this.walls,
       this.pillars,
-      this.floor,
+      this.floorTiles,
       15,
       2000
     );*/

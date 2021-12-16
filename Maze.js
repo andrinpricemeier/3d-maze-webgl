@@ -1,5 +1,6 @@
 import { Cell } from "./Cell.js";
 import { Pillar } from "./Pillar.js";
+import { FloorTile } from "./FloorTile.js";
 
 export class Maze {
   constructor(rows, columns, mask) {
@@ -42,6 +43,14 @@ export class Maze {
     return cells;
   }
 
+  getFloorTiles(gl, ctx, width, height, thickness, wallThickness, wallHeight) {
+    const tiles = [];
+    for (const cell of this.get_cells()) {
+      tiles.push(new FloorTile(gl, ctx, width,  height, thickness, cell.getViewColumn(), cell.getViewRow(), wallThickness, wallHeight));
+    }
+    return tiles;
+  }
+
   getPillars(gl, ctx, width, height, thickness, wallWidth) {
     const uniquePillarCoords = new Set();
     for (const cell of this.get_cells()) {
@@ -68,10 +77,10 @@ export class Maze {
     return pillars;
   }
 
-  getWalls(gl, ctx, width, height, thickness) {
+  getWalls(gl, ctx, width, height, thickness, offsetZ, mustBeLinked) {
     const lookup = new Map();
     for (const cell of this.get_cells()) {
-      for (const wall of cell.getWalls(gl, ctx, width, height, thickness)) {
+      for (const wall of cell.getWalls(gl, ctx, width, height, thickness, offsetZ, mustBeLinked)) {
         const key = `${wall.getCoordX()}.${wall.getCoordY()}.${
           wall.orientation
         }`;
