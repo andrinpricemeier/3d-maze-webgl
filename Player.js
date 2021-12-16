@@ -1,5 +1,6 @@
 import { SolidCube } from './objects/SolidCube.js';
-import { ThirdPersonView } from './ThirdPersonView.js';
+import { FirstPersonView } from './FirstPersonView.js';
+import {ThirdPersonView} from "./ThirdPersonView.js";
 
 export class Player {
   constructor(gl, ctx, startCell, wallWidth, wallThickness) {
@@ -37,6 +38,7 @@ export class Player {
       CLOCKWISE: 1,
       COUNTERCLOCKWISE: 2,
     };
+
     this.angle = 0;
     this.cube = SolidCube(
       this.gl,
@@ -47,6 +49,7 @@ export class Player {
       [0.0, 1.0, 1.0],
       [1.0, 0.0, 1.0]
     );
+    //this.personView = new FirstPersonView(gl, ctx, startCell, wallWidth, wallThickness);
     this.personView = new ThirdPersonView(gl, ctx, startCell, wallWidth, wallThickness);
     this.angularSpeed = (0.5 * 2 * Math.PI) / 360.0;
     this.hookupEventListeners();
@@ -54,21 +57,22 @@ export class Player {
 
   //Regelmässig
   update() {
-    //direction = getDirection
     const direction = this.getDirection();
+    console.log("direction: " + direction)
     const rotation = this.getRotation();
 
     if (direction !== -1) {
       if (this.canMoveTo(direction)) {
+        console.log("Can move to " + direction)
         this.move(direction);
       }
     }
 
-    /*if (rotation !== -1) {
-      this.rotate(rotation);
-    }*/
+    if (rotation !== -1) {
+      this.personView.rotate(rotation);
+    }
     
-    this.personView.update(this.currentCell);
+    this.personView.update(this.currentCell, direction);
 
     
     this.angle += this.angularSpeed;
@@ -90,43 +94,23 @@ export class Player {
     }
   }
 
-  rotate(rotation) {
-    // Rotate
-
-    if (rotation === this.rotation.CLOCKWISE) {
-      //this.camera.rotateClockwise();
-    } else if (rotation === this.rotation.COUNTERCLOCKWISE) {
-      //this.camera.rotateCounterClockwise();
-    }
-    //this.camera.setPosition(this.currentCell.column, 0, this.currentCell.row);
-  }
-
   getDirection() {
-    /*if (this.isDown(this.key.W)) {
-      return (this.direction.UP + this.camera.orientation) % 4;
-    } else if (this.isDown(this.key.RIGHT)) {
-      return (this.direction.RIGHT + this.camera.orientation) % 4;
-    } else if (this.isDown(this.key.DOWN)) {
-      return (this.direction.DOWN + this.camera.orientation) % 4;
-    } else if (this.isDown(this.key.LEFT)) {
-      return (this.direction.LEFT + this.camera.orientation) % 4;
-    }*/
     if (this.isDown(this.key.W)) {
-      return this.direction.UP;
+      return (this.direction.UP + this.personView.orientation) % 4;
     } else if (this.isDown(this.key.D)) {
-      return this.direction.RIGHT;
+      return (this.direction.RIGHT + this.personView.orientation) % 4;
     } else if (this.isDown(this.key.S)) {
-      return this.direction.DOWN;
+      return (this.direction.DOWN + this.personView.orientation) % 4;
     } else if (this.isDown(this.key.A)) {
-      return this.direction.LEFT;
+      return (this.direction.LEFT + this.personView.orientation) % 4;
     }
     return -1;
   }
 
   getRotation() {
-    if (this.isDown(this.key.D)) {
+    if (this.isDown(this.key.ArrowLeft)) {
       return this.rotation.CLOCKWISE;
-    } else if (this.isDown(this.key.A)) {
+    } else if (this.isDown(this.key.ArrowRight)) {
       return this.rotation.COUNTERCLOCKWISE;
     }
     return -1;
@@ -146,13 +130,13 @@ export class Player {
   }
 
   getOrientationArrow() {
-    if (this.camera.orientation === this.camera.orientations.NORTH) {
+    if (this.personView.orientation === this.personView.orientations.NORTH) {
       return "^";
-    } else if (this.camera.orientation === this.camera.orientations.EAST) {
+    } else if (this.personView.orientation === this.personView.orientations.EAST) {
       return ">";
-    } else if (this.camera.orientation === this.camera.orientations.SOUTH) {
+    } else if (this.personView.orientation === this.personView.orientations.SOUTH) {
       return "v";
-    } else if (this.camera.orientation === this.camera.orientations.WEST) {
+    } else if (this.personView.orientation === this.personView.orientations.WEST) {
       return "<";
     }
   }

@@ -8,7 +8,7 @@ export class PerspectiveProjection {
         const projectionMatrix = mat4.create();
         mat4.perspective(
             projectionMatrix,
-            glMatrix.toRadian(40),
+            glMatrix.toRadian(100),
             this.gl.drawingBufferWidth / this.gl.drawingBufferHeight,
             0.1,
             100

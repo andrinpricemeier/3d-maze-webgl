@@ -123,15 +123,15 @@ export class Maze {
         }
         let body = "   ";
         if (
-          player.currentCell.row === cell.row &&
-          player.currentCell.column === cell.column
+          player.currentCell.row === actual.row &&
+          player.currentCell.column === actual.column
         ) {
           body = " " + player.getOrientationArrow() + " ";
         }
-        const east_boundary = cell.linked(cell.east) ? " " : "|";
+        const east_boundary = actual.linked(actual.east) ? " " : "|";
         body += east_boundary;
         top += body;
-        let south_boundary = cell.linked(cell.south) ? "   " : "---";
+        let south_boundary = actual.linked(actual.south) ? "   " : "---";
         let corner = "+";
         south_boundary += corner;
         bottom += south_boundary;

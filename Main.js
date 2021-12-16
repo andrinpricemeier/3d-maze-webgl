@@ -150,6 +150,7 @@ class Main {
     this.floor.draw();
     floorTexture.deactivate();
     this.player.draw(lagFix);
+    console.log(this.maze.toStringWithPlayer(this.player));
   }
 
   async buildMainLevel() {
@@ -208,6 +209,7 @@ class Main {
       THICKNESS,
       WIDTH
     );
+    /*
     await showMazeBuilderProgress(
       this.gl,
       this.ctx,
@@ -219,12 +221,12 @@ class Main {
       this.floor,
       15,
       2000
-    );
+    );*/
   }
 
   async readyToDraw(repo) {
     const intro = new Intro(this.gl, this.ctx, this.textureRepo);
-    await intro.play();
+    //await intro.play();
     await this.buildMainLevel();
     // Init for the normal draw cycle
     this.lights = new SceneLightning(this.gl, this.ctx.shaderProgram);

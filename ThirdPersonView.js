@@ -13,13 +13,23 @@ export class ThirdPersonView {
       this.gl,
       this.ctx.shaderProgram
     );
-    this.projection.update(-15, 15, -15, 15, 0, 100);
-  }
+  this.orientations = {
+      NORTH: 0,
+      EAST: 1,
+      SOUTH: 2,
+      WEST: 3,
+  };
 
+  this.orientation = this.orientations.NORTH;
+    this.projection.update(-30, 30, -30, 30, 0, 100);
+  }
+    rotate(rotation) {
+    }
   update(newCell) {
       this.currentCell = newCell;
       const eyeX = (this.currentCell.wall_x + 1) * this.wallThickness + this.currentCell.wall_x * this.wallWidth + (this.wallWidth / 2);
       const eyeY = this.currentCell.wall_y * this.wallThickness + this.currentCell.wall_y * this.wallWidth;
+
       const eyeZ = 15;
       const centerX = (this.currentCell.wall_x + 1) * this.wallThickness + this.currentCell.wall_x * this.wallWidth + (this.wallWidth / 2);
       const centerY = (this.currentCell.wall_y + 1) * this.wallThickness + this.currentCell.wall_y * this.wallWidth + (this.wallWidth / 2);
