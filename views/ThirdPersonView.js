@@ -1,6 +1,5 @@
-import { OrthographicProjection } from "./OrthographicProjection.js";
-import { Camera } from "./Camera.js";
-
+import { OrthographicProjection } from "../projections/OrthographicProjection.js";
+import { Camera } from "../Camera.js";
 export class ThirdPersonView {
   constructor(gl, ctx, startCell, wallWidth, wallThickness) {
     this.gl = gl;

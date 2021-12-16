@@ -1,5 +1,5 @@
-import { Camera } from "./Camera.js";
-import {PerspectiveProjection} from "./PerspectiveProjection.js";
+import { PerspectiveProjection } from "../projections/PerspectiveProjection.js";
+import { Camera } from "../Camera.js";
 
 export class FirstPersonView {
     constructor(gl, ctx, startCell, wallWidth, wallThickness) {

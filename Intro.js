@@ -1,9 +1,9 @@
-import { Maze } from "./Maze.js";
-import { MazeGenerator } from "./MazeGenerator.js";
-import { SceneLightning } from "./SceneLightning.js";
+import { Maze } from "./mazegen/Maze.js";
+import { MazeGenerator } from "./mazegen/Eller.js";
+import { SceneLightning } from "./lightning/SceneLightning.js";
 import { Player } from "./Player.js";
-import { RecursiveBacktracer } from "./RecursiveBacktracker.js";
-import { Mask } from "./Mask.js";
+import { RecursiveBacktracer } from "./mazegen/RecursiveBacktracker.js";
+import { Mask } from "./mazegen/Mask.js";
 import { showMazeBuilderProgress } from "./utils.js";
 
 export class Intro {
@@ -40,7 +40,7 @@ export class Intro {
     const img = this.textureRepo.get(maskName).img;
     mask.loadFromImage(img);
     this.maze = new Maze(MAZE_DIM, MAZE_DIM, mask);
-    this.generator = new MazeGenerator();
+    this.generator = new Eller();
     //this.generator.generate(this.maze);
     const backtracker = new RecursiveBacktracer();
     backtracker.on(this.maze);

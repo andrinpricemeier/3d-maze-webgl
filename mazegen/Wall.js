@@ -1,4 +1,4 @@
-import { SolidCube } from "./objects/SolidCube.js";
+import { SolidCube } from "../objects/SolidCube.js";
 export class Wall {
   constructor(
     gl,

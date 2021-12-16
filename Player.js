@@ -1,6 +1,6 @@
 import { SolidCube } from './objects/SolidCube.js';
-import { FirstPersonView } from './FirstPersonView.js';
-import {ThirdPersonView} from "./ThirdPersonView.js";
+import { FirstPersonView } from './views/FirstPersonView.js';
+import {ThirdPersonView} from "./views/ThirdPersonView.js";
 
 export class Player {
   constructor(gl, ctx, startCell, wallWidth, wallThickness) {

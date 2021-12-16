@@ -1,10 +1,10 @@
-import { Maze } from "./Maze.js";
-import { MazeGenerator } from "./MazeGenerator.js";
+import { Maze } from "./mazegen/Maze.js";
+import { MazeGenerator } from "./mazegen/Eller.js";
+import { SceneLightning } from "./lightning/SceneLightning.js";
+import { RecursiveBacktracer } from "./mazegen/RecursiveBacktracker.js";
+import { Mask } from "./mazegen/Mask.js";
 import { TextureRepository } from "./TextureRepository.js";
-import { SceneLightning } from "./SceneLightning.js";
 import { Player } from "./Player.js";
-import { RecursiveBacktracer } from "./RecursiveBacktracker.js";
-import { Mask } from "./Mask.js";
 import { Intro } from "./Intro.js";
 import { showMazeBuilderProgress } from "./utils.js";
 

@@ -1,4 +1,4 @@
-import { shuffle } from './utils.js';
+import { shuffle } from '../utils.js';
 
 class RowState {
   constructor(starting_set) {

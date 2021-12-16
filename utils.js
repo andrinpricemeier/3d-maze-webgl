@@ -1,4 +1,4 @@
-import { BirdsEyeView } from "./BirdsEyeView.js";
+import { BirdsEyeView } from "./views/BirdsEyeView.js";
 
 export function shuffle(array) {
   let currentIndex = array.length,
