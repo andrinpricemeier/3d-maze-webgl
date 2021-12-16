@@ -46,7 +46,19 @@ export class Maze {
   getFloorTiles(gl, ctx, width, height, thickness, wallThickness, wallHeight) {
     const tiles = [];
     for (const cell of this.get_cells()) {
-      tiles.push(new FloorTile(gl, ctx, width,  height, thickness, cell.getViewColumn(), cell.getViewRow(), wallThickness, wallHeight));
+      tiles.push(
+        new FloorTile(
+          gl,
+          ctx,
+          width,
+          height,
+          thickness,
+          cell.getViewColumn(),
+          cell.getViewRow(),
+          wallThickness,
+          wallHeight
+        )
+      );
     }
     return tiles;
   }
@@ -80,7 +92,15 @@ export class Maze {
   getWalls(gl, ctx, width, height, thickness, offsetZ, mustBeLinked) {
     const lookup = new Map();
     for (const cell of this.get_cells()) {
-      for (const wall of cell.getWalls(gl, ctx, width, height, thickness, offsetZ, mustBeLinked)) {
+      for (const wall of cell.getWalls(
+        gl,
+        ctx,
+        width,
+        height,
+        thickness,
+        offsetZ,
+        mustBeLinked
+      )) {
         const key = `${wall.getCoordX()}.${wall.getCoordY()}.${
           wall.orientation
         }`;
@@ -168,6 +188,15 @@ export class Maze {
 
   start_cell() {
     return this.random_cell();
+  }
+
+  end_cell(startCell) {
+    while (true) {
+      const endCell = this.random_cell();
+      if (startCell !== endCell) {
+        return endCell;
+      }
+    }
   }
 
   random_cell() {

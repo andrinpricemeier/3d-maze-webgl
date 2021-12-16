@@ -104,8 +104,11 @@ class Main {
   draw() {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     this.textureRepo = new TextureRepository(this.gl, this.ctx.shaderProgram);
-    this.textureRepo.add("wall", "textures/wall.png");
-    this.textureRepo.add("floor", "textures/floor.png");
+    this.textureRepo.add("beton_wall", "textures/beton_wall.png");
+    this.textureRepo.add("beton_floor", "textures/beton_floor.png");
+    this.textureRepo.add("beton_wall_bulletholes", "textures/beton_wall_bulletholes.png");
+    this.textureRepo.add("banksy_wall", "textures/banksy_wall.png");
+    this.textureRepo.add("blue_beton_floor", "textures/blue_beton_floor.png");
     this.textureRepo.loadAll(() => this.readyToDraw(this.textureRepo));
   }
 
@@ -179,7 +182,9 @@ class Main {
       WIDTH
     );
     this.scene = new Scene();
-    const level = new BetonLevel(this.gl, this.ctx, this.textureRepo, this.maze.start_cell(), WIDTH, THICKNESS);
+    const startCell = this.maze.start_cell();
+    const endCell = this.maze.end_cell(startCell);
+    const level = new BetonLevel(this.gl, this.ctx, this.textureRepo, startCell, endCell, WIDTH, THICKNESS);
     level.addFloorTiles(floorTiles);
     level.addFloorWalls(floorWalls);
     level.addPillars(pillars);

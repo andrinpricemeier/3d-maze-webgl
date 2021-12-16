@@ -13,15 +13,7 @@ export class Cell {
     this.west = null;
     this.wall_x = this.column;
     this.wall_y = this.num_rows - this.row - 1;
-  }
-
-  placeObject(obj) {
-    this.obj = obj;
-    // Translate object from its world to our object space.
-  }
-
-  draw() {
-    // draw obj
+    this.isTrophy = false;
   }
 
   getViewRow() {
