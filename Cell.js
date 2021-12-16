@@ -24,10 +24,18 @@ export class Cell {
     // draw obj
   }
 
+  getViewRow() {
+    return this.num_rows - this.row - 1;
+  }
+
+  getViewColumn() {
+    return this.column;
+  }
+
   getWalls(gl, ctx, width, height, thickness) {
     const walls = [];
-    const wall_x = this.column;
-    const wall_y = this.num_rows - this.row - 1;
+    const wall_x = this.getViewColumn();
+    const wall_y = this.getViewRow();
     if (!this.isLinkedNorth()) {
       const wall = new Wall(gl, ctx, width, height, thickness, wall_x, wall_y + 1, "horizontal");
       walls.push(wall);

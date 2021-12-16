@@ -43,22 +43,27 @@ export class Maze {
   }
 
   getPillars(gl, ctx, width, height, thickness, wallWidth) {
+    const uniquePillarCoords = new Set();
+    for (const cell of this.get_cells()) {
+      uniquePillarCoords.add([cell.getViewRow(), cell.getViewColumn()]);
+      uniquePillarCoords.add([cell.getViewRow(), cell.getViewColumn() + 1]);
+      uniquePillarCoords.add([cell.getViewRow() + 1, cell.getViewColumn() + 1]);
+      uniquePillarCoords.add([cell.getViewRow() + 1, cell.getViewColumn()]);
+    }
     const pillars = [];
-    for (let rowIndex = 0; rowIndex <= this.rows; rowIndex++) {
-      for (let columnIndex = 0; columnIndex <= this.columns; columnIndex++) {
-        pillars.push(
-          new Pillar(
-            gl,
-            ctx,
-            width,
-            height,
-            thickness,
-            columnIndex,
-            rowIndex,
-            wallWidth
-          )
-        );
-      }
+    for (const pillarCord of uniquePillarCoords) {
+      pillars.push(
+        new Pillar(
+          gl,
+          ctx,
+          width,
+          height,
+          thickness,
+          pillarCord[1],
+          pillarCord[0],
+          wallWidth
+        )
+      );
     }
     return pillars;
   }
