@@ -1,4 +1,4 @@
-import { SolidCube } from "./objects/SolidCube.js";
+import { SolidCube } from "../objects/SolidCube.js";
 
 export class Pillar {
   constructor(gl, ctx, width, height, thickness, coord_x, coord_y, wall_width) {
@@ -19,6 +19,18 @@ export class Pillar {
       [0.0, 1.0, 1.0],
       [1.0, 0.0, 1.0]
     );
+  }
+
+  setTextureName(textureName) {
+    this.textureName = textureName;
+  }
+
+  getTextureName() {
+    return this.textureName;
+  }  
+  
+  update() {
+    
   }
 
   draw() {

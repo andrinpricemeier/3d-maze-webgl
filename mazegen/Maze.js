@@ -1,6 +1,6 @@
 import { Cell } from "./Cell.js";
-import { Pillar } from "../Pillar.js";
-import { FloorTile } from "../FloorTile.js";
+import { Pillar } from "./Pillar.js";
+import { FloorTile } from "./FloorTile.js";
 
 export class Maze {
   constructor(rows, columns, mask) {

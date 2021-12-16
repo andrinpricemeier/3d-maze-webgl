@@ -7,6 +7,8 @@ import { TextureRepository } from "./TextureRepository.js";
 import { Player } from "./Player.js";
 import { Intro } from "./Intro.js";
 import { showMazeBuilderProgress } from "./utils.js";
+import { Scene } from './Scene.js';
+import { BetonLevel } from './levels/BetonLevel.js';
 
 window.onload = main;
 
@@ -120,69 +122,28 @@ class Main {
   }
 
   update() {
-    this.player.update();
+    this.scene.update();
   }
 
   render(lagFix) {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-    // Lights always have to be set first because they build the basis for calculating the color of all pixels.
-    this.lights.setAmbientLight(1.3);
-    this.lights.draw();
-    const wallTexture = this.textureRepo.get("wall");
-    wallTexture.activate();
-    for (const wall of this.walls) {
-      wall.draw();
-    }
-    for (const pillar of this.pillars) {
-      pillar.draw();
-    }
-    const floorTexture = this.textureRepo.get("floor");
-    floorTexture.activate();
-    for (const wall of this.floorWalls) {
-      wall.draw();
-    }
-    for (const floorTile of this.floorTiles) {
-      floorTile.draw();
-    }
-    floorTexture.deactivate();
-    this.player.draw(lagFix);
-    //console.log(this.maze.toStringWithPlayer(this.player));
+    this.scene.draw(lagFix);
   }
 
-  async buildMainLevel() {
+  buildMainLevel() {
     const WIDTH = 10;
     const HEIGHT = 10;
     const THICKNESS = 2;
     const MAZE_DIM = 15;
     const mask = new Mask(MAZE_DIM, MAZE_DIM);
-    //const img = this.textureRepo.get("mask_cg").img;
-    //mask.loadFromImage(img);
     this.maze = new Maze(MAZE_DIM, MAZE_DIM, mask);
-    this.generator = new MazeGenerator();
-    //this.generator.generate(this.maze);
     const backtracker = new RecursiveBacktracer();
     backtracker.on(this.maze);
-    //console.log(this.maze.toString());
     const floorWidth =
       (this.maze.columns + 1) * THICKNESS + this.maze.columns * WIDTH;
     const floorHeight =
       (this.maze.rows + 1) * THICKNESS + this.maze.rows * HEIGHT;
-    this.lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
-    this.lights.setAmbientLight(1.0);
-    this.lights.addDiffuseLight(
-      [floorWidth / 2, floorHeight / 2, 15],
-      [0.0, 1.0, 1.0],
-      1.0
-    );
-    this.lights.draw();
-    this.player = new Player(
-      this.gl,
-      this.ctx,
-      this.maze.start_cell(),
-      WIDTH,
-      THICKNESS
-    );
-    this.floorTiles = this.maze.getFloorTiles(
+    const floorTiles = this.maze.getFloorTiles(
       this.gl,
       this.ctx,
       WIDTH,
@@ -191,7 +152,7 @@ class Main {
       THICKNESS,
       HEIGHT
     );
-    this.walls = this.maze.getWalls(
+    const walls = this.maze.getWalls(
       this.gl,
       this.ctx,
       WIDTH,
@@ -200,7 +161,7 @@ class Main {
       0,
       true
     );
-    this.floorWalls = this.maze.getWalls(
+    const floorWalls = this.maze.getWalls(
       this.gl,
       this.ctx,
       WIDTH,
@@ -209,7 +170,7 @@ class Main {
       HEIGHT,
       false
     );
-    this.pillars = this.maze.getPillars(
+    const pillars = this.maze.getPillars(
       this.gl,
       this.ctx,
       THICKNESS,
@@ -217,27 +178,19 @@ class Main {
       THICKNESS,
       WIDTH
     );
-    /*
-    await showMazeBuilderProgress(
-      this.gl,
-      this.ctx,
-      this.textureRepo,
-      floorWidth,
-      floorHeight,
-      this.walls,
-      this.pillars,
-      this.floorTiles,
-      15,
-      2000
-    );*/
+    this.scene = new Scene();
+    const level = new BetonLevel(this.gl, this.ctx, this.textureRepo, this.maze.start_cell(), WIDTH, THICKNESS);
+    level.addFloorTiles(floorTiles);
+    level.addFloorWalls(floorWalls);
+    level.addPillars(pillars);
+    level.addWalls(walls);
+    level.configureLevel();
+    this.scene.addObjectToScene(level);
   }
 
-  async readyToDraw(repo) {
-    const intro = new Intro(this.gl, this.ctx, this.textureRepo);
-    //await intro.play();
-    await this.buildMainLevel();
-    // Init for the normal draw cycle
-    this.lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
+  readyToDraw(repo) {
+    this.textureRepo = repo;
+    this.buildMainLevel();
     window.requestAnimationFrame((current) => this.drawAnimated(current));
   }
 }

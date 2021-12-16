@@ -39,6 +39,18 @@ export class Wall {
     return this.coord_y;
   }
 
+  setTextureName(textureName) {
+    this.textureName = textureName;
+  }
+
+  getTextureName() {
+    return this.textureName;
+  }
+
+  update() {
+    
+  }
+
   draw() {
     const modelMatrix = mat4.create();
     if (this.orientation === "vertical") {

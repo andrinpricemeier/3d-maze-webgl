@@ -1,17 +1,17 @@
 export class Scene {
-    constructor() {
-        this.objectsToDraw = [];
-    }
+  constructor() {
+    this.objectsToDraw = [];
+  }
 
-    addObjectToScene(obj) {
-        this.objectsToDraw.push(obj);
-    }
+  addObjectToScene(obj) {
+    this.objectsToDraw.push(obj);
+  }
 
-    update() {
-        this.objectsToDraw.forEach(o => o.update());
-    }
+  update() {
+    this.objectsToDraw.forEach((o) => o.update());
+  }
 
-    draw() {
-        this.objectsToDraw.forEach(o => o.draw());
-    }
+  draw(lagFix) {
+    this.objectsToDraw.forEach((o) => o.draw(lagFix));
+  }
 }
