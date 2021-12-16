@@ -17,7 +17,7 @@ struct DiffuseLight {
     vec3 color;
     float factor;
 };
-uniform DiffuseLight diffuseLights[4];
+uniform DiffuseLight diffuseLights[10];
 uniform int numberOfDiffuseLights;
 
 struct SpecularLight {
@@ -27,7 +27,7 @@ struct SpecularLight {
     float shininess;
     vec3 materialColor;
 };
-uniform SpecularLight specularLights[4];
+uniform SpecularLight specularLights[10];
 uniform int numberOfSpecularLights;
 
 const int MAX_ITERATIONS = 100;
