@@ -17,6 +17,8 @@ export class Player {
       KeyW: false,
       KeyD: false,
       KeyS: false,
+      Digit1: false,
+      Digit3: false
     };
     this.key = {
       LEFT: "ArrowLeft",
@@ -27,6 +29,8 @@ export class Player {
       W: "KeyW",
       D: "KeyD",
       S: "KeyS",
+      Key1: "Digit1",
+      Key3: "Digit3",
     };
     this.direction = {
       UP: 0,
@@ -49,7 +53,11 @@ export class Player {
       [0.0, 1.0, 1.0],
       [1.0, 0.0, 1.0]
     );
-    //this.personView = new FirstPersonView(gl, ctx, startCell, wallWidth, wallThickness);
+    this.gl = gl;
+    this.ctx = ctx;
+    this.startCell = startCell;
+    this.wallWidth = wallWidth;
+    this.wallThickness = wallThickness;
     this.personView = new ThirdPersonView(gl, ctx, startCell, wallWidth, wallThickness);
     this.angularSpeed = (0.5 * 2 * Math.PI) / 360.0;
     this.hookupEventListeners();
@@ -57,13 +65,12 @@ export class Player {
 
   //Regelmässig
   update() {
+    this.updateView();
     const direction = this.getDirection();
-    console.log("direction: " + direction)
     const rotation = this.getRotation();
 
     if (direction !== -1) {
       if (this.canMoveTo(direction)) {
-        console.log("Can move to " + direction)
         this.move(direction);
       }
     }
@@ -78,6 +85,14 @@ export class Player {
     this.angle += this.angularSpeed;
     if (this.angle > 2.0 * Math.PI) {
       this.angle -= 2.0 * Math.PI;
+    }
+  }
+
+  updateView() {
+    if (this.isDown(this.key.Key1)) {
+      this.personView = new FirstPersonView(this.gl, this.ctx, this.startCell, this.wallWidth, this.wallThickness);
+    }else if(this.isDown(this.key.Key3)) {
+      this.personView = new ThirdPersonView(this.gl, this.ctx, this.startCell, this.wallWidth, this.wallThickness);
     }
   }
 
@@ -108,9 +123,9 @@ export class Player {
   }
 
   getRotation() {
-    if (this.isDown(this.key.ArrowLeft)) {
+    if (this.isDown(this.key.RIGHT)) {
       return this.rotation.CLOCKWISE;
-    } else if (this.isDown(this.key.ArrowRight)) {
+    } else if (this.isDown(this.key.LEFT)) {
       return this.rotation.COUNTERCLOCKWISE;
     }
     return -1;

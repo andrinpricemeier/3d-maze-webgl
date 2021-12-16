@@ -43,11 +43,10 @@ export class FirstPersonView {
   update(cell) {
       this.currentCell = cell
       var direction = this.getDirection()
-      const eyeX = (this.currentCell.wall_x + 1) * this.wallThickness + this.currentCell.wall_x * this.wallWidth + (this.wallWidth / 2);;
-      const eyeY = this.currentCell.wall_y * this.wallThickness + this.currentCell.wall_y * this.wallWidth + (this.wallWidth / 2);
-      const eyeZ = -10;
+      const eyeX = (this.currentCell.wall_x + 1) * this.wallThickness + this.currentCell.wall_x * this.wallWidth + (this.wallWidth / 2);
+      const eyeY = (this.currentCell.wall_y + 1) * this.wallThickness + this.currentCell.wall_y * this.wallWidth + (this.wallWidth / 2);
 
-
+      const eyeZ = -4;
 
       const centerX = eyeX + direction.x;
       const centerY = eyeY + direction.y;
