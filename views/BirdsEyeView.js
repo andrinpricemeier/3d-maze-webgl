@@ -20,6 +20,7 @@ export class BirdsEyeView {
     this.orientation = this.orientations.NORTH;
     this.projection.update(0, floorWidth, 0, floorHeight, 0, 100);
   }
+  rotate(rotation) {}
 
   update() {
       const eyeX = 0;
