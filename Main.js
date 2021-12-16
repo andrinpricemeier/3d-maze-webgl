@@ -184,7 +184,7 @@ class Main {
     this.scene = new Scene();
     const startCell = this.maze.start_cell();
     const endCell = this.maze.end_cell(startCell);
-    const level = new BetonLevel(this.gl, this.ctx, this.textureRepo, startCell, endCell, WIDTH, THICKNESS);
+    const level = new BetonLevel(this.gl, this.ctx, this.textureRepo, startCell, endCell, WIDTH, THICKNESS, floorWidth, floorHeight);
     level.addFloorTiles(floorTiles);
     level.addFloorWalls(floorWalls);
     level.addPillars(pillars);

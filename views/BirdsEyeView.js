@@ -10,6 +10,14 @@ export class BirdsEyeView {
       this.gl,
       this.ctx.shaderProgram
     );
+    this.orientations = {
+      NORTH: 0,
+      EAST: 1,
+      SOUTH: 2,
+      WEST: 3,
+    };
+
+    this.orientation = this.orientations.NORTH;
     this.projection.update(0, floorWidth, 0, floorHeight, 0, 100);
   }
 

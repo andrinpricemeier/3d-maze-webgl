@@ -5,12 +5,12 @@ import { PlayerFigure } from "../PlayerFigure.js";
 import { Trophy } from "../Trophy.js";
 
 export class BetonLevel {
-  constructor(gl, ctx, textureRepo, startCell, endCell, width, thickness) {
+  constructor(gl, ctx, textureRepo, startCell, endCell, width, thickness, floorWidth, floorHeight) {
     this.gl = gl;
     this.ctx = ctx;
     this.textureRepo = textureRepo;
     this.lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
-    this.player = new Player(this.gl, this.ctx, startCell, width, thickness, new CellObject(new PlayerFigure(gl, ctx, 4, 4, 4)));
+    this.player = new Player(this.gl, this.ctx, startCell, width, thickness, new CellObject(new PlayerFigure(gl, ctx, 4, 4, 4)), floorWidth, floorHeight);
     this.trophy = new CellObject(new Trophy(gl, ctx, 4, 4, 4));
     this.trophy.setPosition(endCell.wall_x, endCell.wall_y);
     endCell.isTrophy = true;

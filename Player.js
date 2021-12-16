@@ -1,12 +1,15 @@
 import { SolidCube } from "./objects/SolidCube.js";
 import { FirstPersonView } from "./views/FirstPersonView.js";
 import { ThirdPersonView } from "./views/ThirdPersonView.js";
+import { BirdsEyeView } from "./views/BirdsEyeView.js";
 
 export class Player {
-  constructor(gl, ctx, startCell, wallWidth, wallThickness, figure) {
+  constructor(gl, ctx, startCell, wallWidth, wallThickness, figure, floorWidth, floorHeight) {
     this.gl = gl;
     this.ctx = ctx;
     this.currentCell = startCell;
+    this.floorWidth = floorWidth;
+    this.floorHeight = floorHeight;
     this.figure = figure;
     this.figure.setPosition(startCell.wall_x, startCell.wall_y);
     this.pressed = {};
@@ -32,6 +35,7 @@ export class Player {
       D: "KeyD",
       S: "KeyS",
       Key1: "Digit1",
+      Key2: "Digit2",
       Key3: "Digit3",
     };
     this.direction = {
@@ -92,6 +96,13 @@ export class Player {
         this.startCell,
         this.wallWidth,
         this.wallThickness
+      );
+    } else if (this.isDown(this.key.Key2)) {
+      this.personView = new BirdsEyeView(
+        this.gl,
+        this.ctx,
+        this.floorWidth,
+        this.floorHeight
       );
     } else if (this.isDown(this.key.Key3)) {
       this.personView = new ThirdPersonView(
