@@ -15,6 +15,15 @@ export class Cell {
     this.wall_y = this.num_rows - this.row - 1;
   }
 
+  placeObject(obj) {
+    this.obj = obj;
+    // Translate object from its world to our object space.
+  }
+
+  draw() {
+    // draw obj
+  }
+
   getWalls(gl, ctx, width, height, thickness) {
     const walls = [];
     const wall_x = this.column;
