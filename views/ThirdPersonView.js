@@ -44,11 +44,7 @@ export class ThirdPersonView {
       this.camera.draw();
       this.projection.draw();
   }
-}
 
-    this.projection.update(-30, 30, -30, 30, 0, 100);
-  }
-  rotate(rotation) {}
   update(newCell) {
     this.currentCell = newCell;
     const eyeX =
