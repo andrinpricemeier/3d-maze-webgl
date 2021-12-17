@@ -1,13 +1,14 @@
-import { Maze } from "./Maze.js";
-import { MazeGenerator } from "./MazeGenerator.js";
+import { Maze } from "./mazegen/Maze.js";
+import { MazeGenerator } from "./mazegen/Eller.js";
+import { SceneLightning } from "./lightning/SceneLightning.js";
+import { RecursiveBacktracer } from "./mazegen/RecursiveBacktracker.js";
+import { Mask } from "./mazegen/Mask.js";
 import { TextureRepository } from "./TextureRepository.js";
-import { Floor } from "./Floor.js";
-import { SceneLightning } from "./SceneLightning.js";
 import { Player } from "./Player.js";
-import { RecursiveBacktracer } from "./RecursiveBacktracker.js";
-import { Mask } from "./Mask.js";
 import { Intro } from "./Intro.js";
 import { showMazeBuilderProgress } from "./utils.js";
+import { Scene } from './Scene.js';
+import { BetonLevel } from './levels/BetonLevel.js';
 
 window.onload = main;
 
@@ -103,16 +104,11 @@ class Main {
   draw() {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     this.textureRepo = new TextureRepository(this.gl, this.ctx.shaderProgram);
-    this.textureRepo.add("wall", "textures/wall.png");
-    this.textureRepo.add("floor", "textures/floor.png");
-    this.textureRepo.add("mask_g", "textures/mask_g.png");
-    this.textureRepo.add("mask_a", "textures/mask_a.png");
-    this.textureRepo.add("mask_b", "textures/mask_b.png");
-    this.textureRepo.add("mask_t", "textures/mask_t.png");
-    this.textureRepo.add("mask_cg", "textures/mask_cg.png");
-    this.textureRepo.add("mask_abt", "textures/mask_abt.png");
-    this.textureRepo.add("mask_rose", "textures/mask_rose.png");
-    this.textureRepo.add("mask_bio", "textures/mask_bio.png");
+    this.textureRepo.add("beton_wall", "textures/beton_wall.png");
+    this.textureRepo.add("beton_floor", "textures/beton_floor.png");
+    this.textureRepo.add("beton_wall_bulletholes", "textures/beton_wall_bulletholes.png");
+    this.textureRepo.add("banksy_wall", "textures/banksy_wall.png");
+    this.textureRepo.add("blue_beton_floor", "textures/blue_beton_floor.png");
     this.textureRepo.loadAll(() => this.readyToDraw(this.textureRepo));
   }
 
@@ -129,79 +125,55 @@ class Main {
   }
 
   update() {
-    this.player.update();
+    this.scene.update();
   }
 
   render(lagFix) {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-    // Lights always have to be set first because they build the basis for calculating the color of all pixels.
-    this.lights.setAmbientLight(1.3);
-    this.lights.draw();
-    const wallTexture = this.textureRepo.get("wall");
-    wallTexture.activate();
-    for (const wall of this.walls) {
-      wall.draw();
-    }
-    for (const pillar of this.pillars) {
-      pillar.draw();
-    }
-    const floorTexture = this.textureRepo.get("floor");
-    floorTexture.activate();
-    this.floor.draw();
-    floorTexture.deactivate();
-    this.player.draw(lagFix);
-    console.log(this.maze.toStringWithPlayer(this.player));
+    this.scene.draw(lagFix);
   }
 
-  async buildMainLevel() {
+  buildMainLevel() {
     const WIDTH = 10;
     const HEIGHT = 10;
     const THICKNESS = 2;
     const MAZE_DIM = 15;
     const mask = new Mask(MAZE_DIM, MAZE_DIM);
-    const img = this.textureRepo.get("mask_cg").img;
-    mask.loadFromImage(img);
     this.maze = new Maze(MAZE_DIM, MAZE_DIM, mask);
-    this.generator = new MazeGenerator();
-    //this.generator.generate(this.maze);
     const backtracker = new RecursiveBacktracer();
     backtracker.on(this.maze);
-    console.log(this.maze.toString());
     const floorWidth =
       (this.maze.columns + 1) * THICKNESS + this.maze.columns * WIDTH;
     const floorHeight =
       (this.maze.rows + 1) * THICKNESS + this.maze.rows * HEIGHT;
-    this.lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
-    this.lights.setAmbientLight(1.0);
-    this.lights.addDiffuseLight(
-      [floorWidth / 2, floorHeight / 2, 15],
-      [0.0, 1.0, 1.0],
-      1.0
-    );
-    this.lights.draw();
-    this.player = new Player(
+    const floorTiles = this.maze.getFloorTiles(
       this.gl,
       this.ctx,
-      this.maze.start_cell(),
       WIDTH,
-      THICKNESS
-    );
-    this.floor = new Floor(
-      this.gl,
-      this.ctx,
-      floorWidth,
-      floorHeight,
+      WIDTH,
+      THICKNESS,
       THICKNESS,
       HEIGHT
     );
-    this.walls = this.maze.getWalls(
+    const walls = this.maze.getWalls(
       this.gl,
       this.ctx,
       WIDTH,
       HEIGHT,
-      THICKNESS
+      THICKNESS,
+      0,
+      true
     );
-    this.pillars = this.maze.getPillars(
+    const floorWalls = this.maze.getWalls(
+      this.gl,
+      this.ctx,
+      WIDTH,
+      THICKNESS,
+      THICKNESS,
+      HEIGHT,
+      false
+    );
+    const pillars = this.maze.getPillars(
       this.gl,
       this.ctx,
       THICKNESS,
@@ -209,27 +181,21 @@ class Main {
       THICKNESS,
       WIDTH
     );
-    /*
-    await showMazeBuilderProgress(
-      this.gl,
-      this.ctx,
-      this.textureRepo,
-      floorWidth,
-      floorHeight,
-      this.walls,
-      this.pillars,
-      this.floor,
-      15,
-      2000
-    );*/
+    this.scene = new Scene();
+    const startCell = this.maze.start_cell();
+    const endCell = this.maze.end_cell(startCell);
+    const level = new BetonLevel(this.gl, this.ctx, this.textureRepo, startCell, endCell, WIDTH, THICKNESS, floorWidth, floorHeight);
+    level.addFloorTiles(floorTiles);
+    level.addFloorWalls(floorWalls);
+    level.addPillars(pillars);
+    level.addWalls(walls);
+    level.configureLevel();
+    this.scene.addObjectToScene(level);
   }
 
-  async readyToDraw(repo) {
-    const intro = new Intro(this.gl, this.ctx, this.textureRepo);
-    //await intro.play();
-    await this.buildMainLevel();
-    // Init for the normal draw cycle
-    this.lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
+  readyToDraw(repo) {
+    this.textureRepo = repo;
+    this.buildMainLevel();
     window.requestAnimationFrame((current) => this.drawAnimated(current));
   }
 }

@@ -1,12 +1,17 @@
-import { SolidCube } from './objects/SolidCube.js';
-import { FirstPersonView } from './FirstPersonView.js';
-import {ThirdPersonView} from "./ThirdPersonView.js";
+import { SolidCube } from "./objects/SolidCube.js";
+import { FirstPersonView } from "./views/FirstPersonView.js";
+import { ThirdPersonView } from "./views/ThirdPersonView.js";
+import { BirdsEyeView } from "./views/BirdsEyeView.js";
 
 export class Player {
-  constructor(gl, ctx, startCell, wallWidth, wallThickness) {
+  constructor(gl, ctx, startCell, wallWidth, wallThickness, figure, floorWidth, floorHeight) {
     this.gl = gl;
     this.ctx = ctx;
     this.currentCell = startCell;
+    this.floorWidth = floorWidth;
+    this.floorHeight = floorHeight;
+    this.figure = figure;
+    this.figure.setPosition(startCell.wall_x, startCell.wall_y);
     this.pressed = {};
     this.handled = {
       ArrowLeft: false,
@@ -18,7 +23,7 @@ export class Player {
       KeyD: false,
       KeyS: false,
       Digit1: false,
-      Digit3: false
+      Digit3: false,
     };
     this.key = {
       LEFT: "ArrowLeft",
@@ -30,6 +35,7 @@ export class Player {
       D: "KeyD",
       S: "KeyS",
       Key1: "Digit1",
+      Key2: "Digit2",
       Key3: "Digit3",
     };
     this.direction = {
@@ -42,24 +48,18 @@ export class Player {
       CLOCKWISE: 1,
       COUNTERCLOCKWISE: 2,
     };
-
-    this.angle = 0;
-    this.cube = SolidCube(
-      this.gl,
-      [1.0, 0.0, 0.0],
-      [0.0, 1.0, 0.0],
-      [0.0, 0.0, 1.0],
-      [1.0, 1.0, 0.0],
-      [0.0, 1.0, 1.0],
-      [1.0, 0.0, 1.0]
-    );
     this.gl = gl;
     this.ctx = ctx;
     this.startCell = startCell;
     this.wallWidth = wallWidth;
     this.wallThickness = wallThickness;
-    this.personView = new ThirdPersonView(gl, ctx, startCell, wallWidth, wallThickness);
-    this.angularSpeed = (0.5 * 2 * Math.PI) / 360.0;
+    this.personView = new ThirdPersonView(
+      gl,
+      ctx,
+      startCell,
+      wallWidth,
+      wallThickness
+    );
     this.hookupEventListeners();
   }
 
@@ -68,6 +68,10 @@ export class Player {
     this.updateView();
     const direction = this.getDirection();
     const rotation = this.getRotation();
+
+    if (this.currentCell.isTrophy) {
+      console.log("WE WON!");
+    }
 
     if (direction !== -1) {
       if (this.canMoveTo(direction)) {
@@ -78,21 +82,36 @@ export class Player {
     if (rotation !== -1) {
       this.personView.rotate(rotation);
     }
-    
-    this.personView.update(this.currentCell, direction);
 
-    
-    this.angle += this.angularSpeed;
-    if (this.angle > 2.0 * Math.PI) {
-      this.angle -= 2.0 * Math.PI;
-    }
+    this.personView.update(this.currentCell, direction);
+    this.figure.setPosition(this.currentCell.wall_x, this.currentCell.wall_y);
+    this.figure.update();
   }
 
   updateView() {
     if (this.isDown(this.key.Key1)) {
-      this.personView = new FirstPersonView(this.gl, this.ctx, this.startCell, this.wallWidth, this.wallThickness);
-    }else if(this.isDown(this.key.Key3)) {
-      this.personView = new ThirdPersonView(this.gl, this.ctx, this.startCell, this.wallWidth, this.wallThickness);
+      this.personView = new FirstPersonView(
+        this.gl,
+        this.ctx,
+        this.startCell,
+        this.wallWidth,
+        this.wallThickness
+      );
+    } else if (this.isDown(this.key.Key2)) {
+      this.personView = new BirdsEyeView(
+        this.gl,
+        this.ctx,
+        this.floorWidth,
+        this.floorHeight
+      );
+    } else if (this.isDown(this.key.Key3)) {
+      this.personView = new ThirdPersonView(
+        this.gl,
+        this.ctx,
+        this.startCell,
+        this.wallWidth,
+        this.wallThickness
+      );
     }
   }
 
@@ -147,45 +166,24 @@ export class Player {
   getOrientationArrow() {
     if (this.personView.orientation === this.personView.orientations.NORTH) {
       return "^";
-    } else if (this.personView.orientation === this.personView.orientations.EAST) {
+    } else if (
+      this.personView.orientation === this.personView.orientations.EAST
+    ) {
       return ">";
-    } else if (this.personView.orientation === this.personView.orientations.SOUTH) {
+    } else if (
+      this.personView.orientation === this.personView.orientations.SOUTH
+    ) {
       return "v";
-    } else if (this.personView.orientation === this.personView.orientations.WEST) {
+    } else if (
+      this.personView.orientation === this.personView.orientations.WEST
+    ) {
       return "<";
     }
   }
 
   draw(lagFix) {
-    this.personView.draw();
-    this.angle += lagFix * this.angularSpeed;
-    if (this.angle > 2.0 * Math.PI) {
-      this.angle -= 2.0 * Math.PI;
-    }
-    //this.camera.draw();    
-    const modelMatrix = mat4.create();
-    const new_x = 2 + (this.currentCell.wall_x + 1) * 2 + this.currentCell.wall_x * 10 + 3;
-    const new_y = 2 + (this.currentCell.wall_y + 1) * 2 + this.currentCell.wall_y * 10 + 3;
-    mat4.translate(modelMatrix, modelMatrix, [new_x, new_y, -5]);    
-    mat4.rotate(modelMatrix, modelMatrix, this.angle, [0, 1, 0]);
-    mat4.scale(modelMatrix, modelMatrix, [
-      4, 4, 4
-    ]);
-    this.gl.uniformMatrix4fv(this.ctx.uModelMatrixId, false, modelMatrix);
-    const normalMatrix = mat3.create();
-    mat3.normalFromMat4(normalMatrix, modelMatrix);
-    this.gl.uniformMatrix3fv(
-      this.ctx.uModelNormalMatrixId,
-      false,
-      normalMatrix
-    );
-    this.cube.draw(
-      this.gl,
-      this.ctx.aVertexPositionId,
-      this.ctx.aVertexColorId,
-      this.ctx.aVertexTextureCoordId,
-      this.ctx.aVertexNormalId
-    );
+    this.personView.draw(lagFix);
+    this.figure.draw(lagFix);
   }
 
   hookupEventListeners() {

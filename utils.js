@@ -1,4 +1,4 @@
-import { BirdsEyeView } from "./BirdsEyeView.js";
+import { BirdsEyeView } from "./views/BirdsEyeView.js";
 
 export function shuffle(array) {
   let currentIndex = array.length,
@@ -32,7 +32,7 @@ export async function showMazeBuilderProgress(
   floorHeight,
   walls,
   pillars,
-  floor,
+  floorTiles,
   speedInMs,
   endWaitInMs
 ) {
@@ -56,7 +56,9 @@ export async function showMazeBuilderProgress(
         break;
       }
       floorTexture.activate();
-      floor.draw();
+      for (const floorTile of floorTiles) {
+        floorTile.draw();
+      }
       wallTexture.activate();
       wall.draw();
       i++;
@@ -66,7 +68,9 @@ export async function showMazeBuilderProgress(
     await sleep(speedInMs);
   }
   floorTexture.activate();
-  floor.draw();
+  for (const floorTile of floorTiles) {
+    floorTile.draw();
+  }
   for (const wall of walls) {
     wallTexture.activate();
     wall.draw();
