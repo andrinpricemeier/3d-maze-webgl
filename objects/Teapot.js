@@ -6,14 +6,21 @@ export class Teapot {
     verticeBuffer;
     indicesBuffer;
     constructor(gl, ctx, startCell) {
+
+
         //this.rawObject;
         this.currentCell = startCell;
-        this.fetchTeapotAsset();
+        this.angle = 0;
+        this.angularSpeed = (0.5 * 2 * Math.PI) / 360.0;
+
         this.gl = gl;
         this.ctx = ctx;
 
-        this.angle = 0;
-        this.angularSpeed = (0.5 * 2 * Math.PI) / 360.0;
+        return (async () => {
+            await this.fetchTeapotAsset();
+            return this; // when done
+        })();
+
         //this.pos = { x:0, y: 0, z: 0 };
         //this.scale = { x: 1, y: 1, z: 1 };
         //this.rotation = 0;
