@@ -39,9 +39,8 @@ export class Mask {
 
     count() {
         let count = 0;
-        for (let rowIndex = 0; rowIndex < this.rows.length; rowIndex++) {
-            this.bits[rowIndex] = [];
-            for (let colIndex = 0; colIndex < this.columns.length; colIndex++) {
+        for (let rowIndex = 0; rowIndex < this.rows; rowIndex++) {
+            for (let colIndex = 0; colIndex < this.columns; colIndex++) {
                 if (this.bits[rowIndex][colIndex]) {
                     count++;
                 }
