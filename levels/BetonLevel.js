@@ -87,9 +87,10 @@ export class BetonLevel {
 
   draw(lagFix) {
     this.player.drawView(lagFix);
-    this.lights.setAmbientLight(1.0);
-    this.lights.addDiffuseLight([this.player.get], [1.0, 1.0, 1.0], 0.05);
-    this.lights.addDiffuseLight([this.floorWidth/2, this.floorHeight/2, 20], [1.0, 1.0, 1.0], 0.05);
+    this.lights.setAmbientLight(0.1);
+    this.lights.clearDiffuseLights();
+    this.lights.addDiffuseLight([this.trophy.actualObject.x, this.trophy.actualObject.y, 2], [1.0, 0.8, 0.0], 0.4);
+    this.lights.addDiffuseLight([this.player.figure.actualObject.x, this.player.figure.actualObject.y, 3], [1.0, 1.0, 1.0], 0.8);
     this.lights.draw(lagFix);
     this.walls.forEach((o) => {
       const texture = this.textureRepo.get(o.getTextureName());
