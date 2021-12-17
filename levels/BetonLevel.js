@@ -3,17 +3,33 @@ import { Player } from "../Player.js";
 import { CellObject } from "../CellObject.js";
 import { PlayerFigure } from "../PlayerFigure.js";
 import { Trophy } from "../Trophy.js";
+import { Teapot } from "../objects/Teapot.js";
 
 export class BetonLevel {
   constructor(gl, ctx, textureRepo, startCell, endCell, width, thickness, floorWidth, floorHeight) {
     this.gl = gl;
     this.ctx = ctx;
+
+
     this.textureRepo = textureRepo;
     this.lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
     this.player = new Player(this.gl, this.ctx, startCell, width, thickness, new CellObject(new PlayerFigure(gl, ctx, 4, 4, 4)), floorWidth, floorHeight);
-    this.trophy = new CellObject(new Trophy(gl, ctx, 4, 4, 4));
-    this.trophy.setPosition(endCell.wall_x, endCell.wall_y);
+    this.floorWidth = floorWidth;
+    this.floorHeight = floorHeight;
+
     endCell.isTrophy = true;
+
+    return (async () => {
+      this.teapot = await new Teapot(
+          this.gl,
+          this.ctx,
+          endCell
+      );
+      this.trophy = new CellObject(new Trophy(gl, ctx, 4, 4, 4));
+      this.trophy.setPosition(endCell.wall_x, endCell.wall_y);
+      return this; // when done
+    })();
+
   }
 
   addWalls(walls) {
@@ -60,11 +76,19 @@ export class BetonLevel {
     this.floorTiles.forEach((o) => o.update());
     this.trophy.update();
     this.player.update();
+
+    if(this.player.currentCell == this.teapot.currentCell && !this.gameIsWon) {
+      this.gameIsWon = true;
+      console.log("Wooow congratulation, you found the teapot. Don't we all <3 mazes? ");
+    }
+
+
   }
 
   draw(lagFix) {
+    this.player.drawView(lagFix);
     this.lights.setAmbientLight(1.0);
-    this.lights.addDiffuseLight([0, 0, 5], [1.0, 1.0, 1.0], 0.03);
+    this.lights.addDiffuseLight([this.floorWidth/2, this.floorHeight/2, 20], [1.0, 1.0, 1.0], 0.05);
     this.lights.draw(lagFix);
     this.walls.forEach((o) => {
       const texture = this.textureRepo.get(o.getTextureName());
@@ -92,5 +116,6 @@ export class BetonLevel {
     });
     this.trophy.draw(lagFix);
     this.player.draw(lagFix);
+    this.teapot.draw(lagFix);
   }
 }

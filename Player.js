@@ -69,10 +69,6 @@ export class Player {
     const direction = this.getDirection();
     const rotation = this.getRotation();
 
-    if (this.currentCell.isTrophy) {
-      console.log("WE WON!");
-    }
-
     if (direction !== -1) {
       if (this.canMoveTo(direction)) {
         this.move(direction);
@@ -181,8 +177,11 @@ export class Player {
     }
   }
 
-  draw(lagFix) {
+  drawView(lagFix) {
     this.personView.draw(lagFix);
+  }
+
+  draw(lagFix) {
     this.figure.draw(lagFix);
   }
 

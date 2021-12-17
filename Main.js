@@ -9,6 +9,7 @@ import { Intro } from "./Intro.js";
 import { showMazeBuilderProgress } from "./utils.js";
 import { Scene } from './Scene.js';
 import { BetonLevel } from './levels/BetonLevel.js';
+import { Teapot } from "./objects/Teapot.js";
 
 window.onload = main;
 
@@ -120,7 +121,7 @@ class Main {
     this.scene.draw(lagFix);
   }
 
-  buildMainLevel() {
+  async buildMainLevel() {
     const WIDTH = 10;
     const HEIGHT = 10;
     const THICKNESS = 2;
@@ -171,7 +172,7 @@ class Main {
     this.scene = new Scene();
     const startCell = this.maze.start_cell();
     const endCell = this.maze.end_cell(startCell);
-    const level = new BetonLevel(this.gl, this.ctx, this.textureRepo, startCell, endCell, WIDTH, THICKNESS, floorWidth, floorHeight);
+    const level = await new BetonLevel(this.gl, this.ctx, this.textureRepo, startCell, endCell, WIDTH, THICKNESS, floorWidth, floorHeight);
     level.addFloorTiles(floorTiles);
     level.addFloorWalls(floorWalls);
     level.addPillars(pillars);

@@ -25,7 +25,6 @@ export class Camera {
 
   draw() {
     const viewMatrix = mat4.create();
-    //mat4.lookAt(viewMatrix, [0, 0, 5], [0, 0, 0], [0, 1, 0]);
     mat4.lookAt(viewMatrix, [this.view.eye.x, this.view.eye.y, this.view.eye.z], [this.view.center.x, this.view.center.y, this.view.center.z], [this.view.up.x, this.view.up.y, this.view.up.z]);
     const matrixId = this.gl.getUniformLocation(this.shaderProgram, "uViewMatrix");
     this.gl.uniformMatrix4fv(matrixId, false, viewMatrix);
