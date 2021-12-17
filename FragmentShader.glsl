@@ -19,6 +19,7 @@ struct DiffuseLight {
 };
 uniform DiffuseLight diffuseLights[10];
 uniform int numberOfDiffuseLights;
+varying mat4 vLightViewMatrix;
 
 struct SpecularLight {
     vec3 position;
@@ -45,7 +46,9 @@ vec3 calculateDiffuseColor(vec3 baseColor) {
             break;
         }
         DiffuseLight diffuseLight = diffuseLights[i];
-        vec3 lightDirectionEye = normalize(diffuseLight.position - vVertexPositionEye3);
+        vec4 pos4 = vLightViewMatrix * vec4(diffuseLight.position, 1.0);
+        vec3 pos3 = pos4.xyz / pos4.w;
+        vec3 lightDirectionEye = normalize(pos3 - vVertexPositionEye3);
         float cosTheta = clamp(dot(normal, lightDirectionEye), 0.0, 1.0);
         diffuseColor += baseColor.rgb * diffuseLight.color * diffuseLight.factor * cosTheta;
     }
@@ -61,12 +64,16 @@ vec3 calculateSpecularColor() {
             break;
         }
         SpecularLight specularLight = specularLights[i];
-        vec3 lightDirectionEye = normalize(specularLight.position - vVertexPositionEye3);
+        vec4 pos4 = vLightViewMatrix * vec4(specularLight.position, 1.0);
+        vec3 pos3 = pos4.xyz / pos4.w;
+        vec3 lightDirectionEye = normalize(pos3 - vVertexPositionEye3);
         if (dot(normal, lightDirectionEye) > 0.0) {
             vec3 reflectionDir = normalize(reflect(-lightDirectionEye, normal));
             vec3 eyeDir = -normalize(vVertexPositionEye3);
             float cosPhi = clamp(dot(reflectionDir, eyeDir), 0.0, 1.0);
-            specularColor += specularLight.factor * specularLight.color * specularLight.materialColor * pow(cosPhi, specularLight.shininess);
+            if (specularLight.shininess > 0.0) {
+                specularColor += specularLight.factor * specularLight.color * specularLight.materialColor * pow(cosPhi, specularLight.shininess);
+            }
         }
     }
     return specularColor;

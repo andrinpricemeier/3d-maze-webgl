@@ -181,8 +181,11 @@ export class Player {
     }
   }
 
-  draw(lagFix) {
+  drawView(lagFix) {
     this.personView.draw(lagFix);
+  }
+
+  draw(lagFix) {
     this.figure.draw(lagFix);
   }
 

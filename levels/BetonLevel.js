@@ -13,6 +13,8 @@ export class BetonLevel {
     this.player = new Player(this.gl, this.ctx, startCell, width, thickness, new CellObject(new PlayerFigure(gl, ctx, 4, 4, 4)), floorWidth, floorHeight);
     this.trophy = new CellObject(new Trophy(gl, ctx, 4, 4, 4));
     this.trophy.setPosition(endCell.wall_x, endCell.wall_y);
+    this.floorWidth = floorWidth;
+    this.floorHeight = floorHeight;
     endCell.isTrophy = true;
   }
 
@@ -63,8 +65,9 @@ export class BetonLevel {
   }
 
   draw(lagFix) {
+    this.player.drawView(lagFix);
     this.lights.setAmbientLight(1.0);
-    this.lights.addDiffuseLight([0, 0, 5], [1.0, 1.0, 1.0], 0.03);
+    this.lights.addDiffuseLight([this.floorWidth/2, this.floorHeight/2, 20], [1.0, 1.0, 1.0], 0.05);
     this.lights.draw(lagFix);
     this.walls.forEach((o) => {
       const texture = this.textureRepo.get(o.getTextureName());
