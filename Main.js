@@ -19,23 +19,10 @@ function main() {
 
 class Main {
   gl;
-  previousTimestamp;
 
-  // objects
-  wiredCube;
-  solidCubeRight;
-
-  matrices;
-  camera;
-  player;
-  light;
   ctx;
 
-  textures;
-  colors;
-
   maze;
-  generator;
 
   constructor() {
     this.ctx = {
