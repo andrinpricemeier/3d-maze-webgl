@@ -60,6 +60,9 @@ vec3 calculateSpecularColor() {
     vec3 specularColor = vec3(0, 0, 0);
     for (int i = 0; i < MAX_ITERATIONS; i++)
     {
+        if (i >= numberOfSpecularLights) {
+            break;
+        }
         SpecularLight specularLight = specularLights[i];
         vec4 pos4 = vLightViewMatrix * vec4(specularLight.position, 1.0);
         vec3 pos3 = pos4.xyz / pos4.w;
@@ -71,9 +74,6 @@ vec3 calculateSpecularColor() {
             if (specularLight.shininess > 0.0) {
                 specularColor += specularLight.factor * specularLight.color * specularLight.materialColor * pow(cosPhi, specularLight.shininess);
             }
-        }
-        if (i >= numberOfSpecularLights) {
-            break;
         }
     }
     return specularColor;
