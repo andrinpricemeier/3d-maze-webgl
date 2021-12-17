@@ -16,8 +16,7 @@ export class BetonLevel {
     this.player = new Player(this.gl, this.ctx, startCell, width, thickness, new CellObject(new PlayerFigure(gl, ctx, 4, 4, 4)), floorWidth, floorHeight);
     this.floorWidth = floorWidth;
     this.floorHeight = floorHeight;
-    this.trophy = new CellObject(new Trophy(gl, ctx, 4, 4, 4));
-    this.trophy.setPosition(endCell.wall_x, endCell.wall_y);
+
     endCell.isTrophy = true;
 
     return (async () => {
@@ -26,6 +25,8 @@ export class BetonLevel {
           this.ctx,
           endCell
       );
+      this.trophy = new CellObject(new Trophy(gl, ctx, 4, 4, 4));
+      this.trophy.setPosition(endCell.wall_x, endCell.wall_y);
       return this; // when done
     })();
 
@@ -75,12 +76,12 @@ export class BetonLevel {
     this.floorTiles.forEach((o) => o.update());
     this.trophy.update();
     this.player.update();
-    /*
+
     if(this.player.currentCell == this.teapot.currentCell && !this.gameIsWon) {
       this.gameIsWon = true;
       console.log("Wooow congratulation, you found the teapot. Don't we all <3 mazes? ");
     }
-    */
+
 
   }
 

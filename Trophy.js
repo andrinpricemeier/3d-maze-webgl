@@ -1,7 +1,7 @@
 import { SolidCube } from "./objects/SolidCube.js";
 
 export class Trophy {
-  constructor(gl, ctx, width, height, thickness) {
+  constructor(gl, object, ctx, width, height, thickness) {
     this.gl = gl;
     this.ctx = ctx;
     this.width = width;

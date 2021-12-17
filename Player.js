@@ -69,10 +69,6 @@ export class Player {
     const direction = this.getDirection();
     const rotation = this.getRotation();
 
-    if (this.currentCell.isTrophy) {
-      console.log("WE WON!");
-    }
-
     if (direction !== -1) {
       if (this.canMoveTo(direction)) {
         this.move(direction);
