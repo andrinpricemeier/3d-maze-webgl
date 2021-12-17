@@ -83,6 +83,13 @@ class Main {
   initWorld() {
     this.textureRepo = new TextureRepository(this.gl, this.ctx.shaderProgram);
     this.textureRepo.add("beton_wall", "textures/beton_wall.png");
+    this.textureRepo.add("brick_wall", "textures/brick_wall.png");
+    this.textureRepo.add("clown_wall", "textures/clown_wall.png");
+    this.textureRepo.add("kandinsky_wall", "textures/kandinsky_wall.png");
+    this.textureRepo.add("universe_wall", "textures/universe_wall.png");
+    this.textureRepo.add("das_quadrat_wall", "textures/das_quadrat_wall.png");
+    this.textureRepo.add("escher_wall", "textures/escher_wall.png");
+    this.textureRepo.add("einstein_wall", "textures/einstein_wall.png");
     this.textureRepo.add("beton_floor", "textures/beton_floor.png");
     this.textureRepo.add(
       "beton_wall_bulletholes",

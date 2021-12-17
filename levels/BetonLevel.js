@@ -54,14 +54,10 @@ export class BetonLevel {
   }
 
   configureLevel() {
+    const wallTextures = ["einstein_wall", "escher_wall", "das_quadrat_wall", "universe_wall", "kandinsky_wall", "banksy_wall", "beton_wall_bulletholes", "brick_wall", "beton_wall", "clown_wall"];
     for (let i = 0; i < this.walls.length; i++) {
-      if (i % 10 === 0) {
-        this.walls[i].setTextureName("banksy_wall");
-      } else if (i % 5 === 0) {
-        this.walls[i].setTextureName("beton_wall_bulletholes");
-      } else {
-        this.walls[i].setTextureName("beton_wall");
-      }
+      const rand = Math.floor(Math.random() * wallTextures.length);
+      this.walls[i].setTextureName(wallTextures[rand]);
     }
     this.floorTiles.forEach((o) => o.setTextureName("beton_floor"));
     this.floorWalls.forEach((o) => o.setTextureName("beton_floor"));
