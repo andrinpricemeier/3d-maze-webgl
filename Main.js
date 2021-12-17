@@ -9,6 +9,7 @@ import { Intro } from "./Intro.js";
 import { showMazeBuilderProgress } from "./utils.js";
 import { Scene } from './Scene.js';
 import { BetonLevel } from './levels/BetonLevel.js';
+import { Teapot } from "./objects/Teapot.js";
 
 window.onload = main;
 

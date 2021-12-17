@@ -3,19 +3,30 @@ import { Player } from "../Player.js";
 import { CellObject } from "../CellObject.js";
 import { PlayerFigure } from "../PlayerFigure.js";
 import { Trophy } from "../Trophy.js";
+import { Teapot } from "../objects/Teapot.js";
 
 export class BetonLevel {
   constructor(gl, ctx, textureRepo, startCell, endCell, width, thickness, floorWidth, floorHeight) {
     this.gl = gl;
     this.ctx = ctx;
+    this.teapot = new Teapot(
+        this.gl,
+        this.ctx,
+        endCell
+    );
     this.textureRepo = textureRepo;
     this.lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
     this.player = new Player(this.gl, this.ctx, startCell, width, thickness, new CellObject(new PlayerFigure(gl, ctx, 4, 4, 4)), floorWidth, floorHeight);
-    this.trophy = new CellObject(new Trophy(gl, ctx, 4, 4, 4));
-    this.trophy.setPosition(endCell.wall_x, endCell.wall_y);
     this.floorWidth = floorWidth;
     this.floorHeight = floorHeight;
+    //this.trophy = new CellObject(new Trophy(gl, ctx, 4, 4, 4));
+    //this.trophy.setPosition(endCell.wall_x, endCell.wall_y);
     endCell.isTrophy = true;
+  }
+
+  async createTeapot(endCell) {
+    await this.sleep(50);
+
   }
 
   addWalls(walls) {
@@ -62,10 +73,19 @@ export class BetonLevel {
     this.floorTiles.forEach((o) => o.update());
     this.trophy.update();
     this.player.update();
+    if(this.player.currentCell == this.teapot.currentCell && !this.gameIsWon) {
+      this.gameIsWon = true;
+      console.log("Wooow congratulation, you found the teapot. Don't we all <3 mazes? ");
+    }
   }
 
+<<<<<<< HEAD
   draw(lagFix) {
     this.player.drawView(lagFix);
+=======
+
+  async draw(lagFix) {
+>>>>>>> edae1a5... feat: hide teapot somewhere in maze, have fun ;D
     this.lights.setAmbientLight(1.0);
     this.lights.addDiffuseLight([this.floorWidth/2, this.floorHeight/2, 20], [1.0, 1.0, 1.0], 0.05);
     this.lights.draw(lagFix);
@@ -95,5 +115,6 @@ export class BetonLevel {
     });
     this.trophy.draw(lagFix);
     this.player.draw(lagFix);
+    this.teapot.draw(lagFix);
   }
 }
