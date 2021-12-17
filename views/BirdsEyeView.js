@@ -18,7 +18,7 @@ export class BirdsEyeView {
     };
 
     this.orientation = this.orientations.NORTH;
-    this.projection.update(0, floorWidth, 0, floorHeight, 0, 100);
+     this.projection.update(- 0.5 * (floorWidth * (this.gl.drawingBufferWidth / this.gl.drawingBufferHeight) - floorWidth) ,   floorWidth * (this.gl.drawingBufferWidth / this.gl.drawingBufferHeight) - 0.5 * (floorWidth * (this.gl.drawingBufferWidth / this.gl.drawingBufferHeight)- floorWidth),0, floorHeight, 0, 100);
   }
   rotate(rotation) {}
 
