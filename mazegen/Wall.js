@@ -54,14 +54,23 @@ export class Wall {
   draw() {
     const modelMatrix = mat4.create();
     if (this.orientation === "vertical") {
-      mat4.translate(modelMatrix, modelMatrix, [this.thickness / 2 + this.coord_x * this.thickness + this.coord_x * this.width, this.width / 2 + (this.coord_y + 1) * this.thickness + this.coord_y * this.width, -(this.height / 2 + this.offsetZ)]);
+      const start_x = this.thickness / 2 + this.coord_x * this.thickness + this.coord_x * this.width;
+      const start_y = this.width / 2 + (this.coord_y + 1) * this.thickness + this.coord_y * this.width;
+      const start_z = -(this.height / 2 + this.offsetZ);
+      mat4.translate(modelMatrix, modelMatrix, [start_x, start_y, start_z]);
+      mat4.rotate(modelMatrix, modelMatrix, glMatrix.toRadian(90), [0, 0, 1]);
+      mat4.rotate(modelMatrix, modelMatrix, glMatrix.toRadian(-90), [1, 0, 0]);
       mat4.scale(modelMatrix, modelMatrix, [
-        this.thickness, this.width, this.height
+        this.width, this.height, this.thickness
       ]);
     } else {
-      mat4.translate(modelMatrix, modelMatrix, [this.width / 2 + (this.coord_x + 1) * this.thickness + this.coord_x * this.width, this.thickness / 2 + this.coord_y * this.thickness + this.coord_y * this.width, -(this.height / 2 + this.offsetZ)]);
+      const start_x = this.width / 2 + (this.coord_x + 1) * this.thickness + this.coord_x * this.width;
+      const start_y = this.thickness / 2 + this.coord_y * this.thickness + this.coord_y * this.width;
+      const start_z = -(this.height / 2 + this.offsetZ);
+      mat4.translate(modelMatrix, modelMatrix, [start_x, start_y, start_z]);
+      mat4.rotate(modelMatrix, modelMatrix, glMatrix.toRadian(-90), [1, 0, 0]);
       mat4.scale(modelMatrix, modelMatrix, [
-        this.width, this.thickness, this.height
+        this.width, this.height, this.thickness
       ]);
     }
     this.gl.uniformMatrix4fv(this.ctx.uModelMatrixId, false, modelMatrix);
