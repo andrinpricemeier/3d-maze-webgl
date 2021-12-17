@@ -14,12 +14,19 @@ export class Solution {
     const distances = current.distances();
     const solution = distances.path_to(goal);
     this.path = [];
-    for (const [part, value] of solution.cells.entries()) {
+    const entries = solution.cells.entries();
+    let total = 1;
+    if (solution.cells.size > 0) {
+      total = solution.cells.size;
+    }
+    let currentPart = 0;
+    for (const [part, value] of entries) {
       const inCell = new CellObject(
-        new SolutionMarker(this.gl, this.ctx, 3, 3, 3)
+        new SolutionMarker(this.gl, this.ctx, 3, 3, 3, currentPart/total)
       );
       inCell.setPosition(part.wall_x, part.wall_y);
       this.path.push(inCell);
+      currentPart++;
     }
   }
 

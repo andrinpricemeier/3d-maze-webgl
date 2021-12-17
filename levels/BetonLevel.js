@@ -6,30 +6,41 @@ import { Trophy } from "../Trophy.js";
 import { Teapot } from "../objects/Teapot.js";
 
 export class BetonLevel {
-  constructor(gl, ctx, textureRepo, startCell, endCell, width, thickness, floorWidth, floorHeight) {
+  constructor(
+    gl,
+    ctx,
+    textureRepo,
+    startCell,
+    endCell,
+    width,
+    thickness,
+    floorWidth,
+    floorHeight
+  ) {
     this.gl = gl;
     this.ctx = ctx;
-
-
     this.textureRepo = textureRepo;
-    this.lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
-    this.player = new Player(this.gl, this.ctx, startCell, endCell, width, thickness, new CellObject(new PlayerFigure(gl, ctx, 4, 4, 4)), floorWidth, floorHeight);
+    this.player = new Player(
+      this.gl,
+      this.ctx,
+      startCell,
+      endCell,
+      width,
+      thickness,
+      new CellObject(new PlayerFigure(gl, ctx, 4, 4, 4)),
+      floorWidth,
+      floorHeight
+    );
     this.floorWidth = floorWidth;
     this.floorHeight = floorHeight;
-
     endCell.isTrophy = true;
 
     return (async () => {
-      this.teapot = await new Teapot(
-          this.gl,
-          this.ctx,
-          endCell
-      );
+      this.teapot = await new Teapot(this.gl, this.ctx, endCell);
       this.trophy = new CellObject(new Trophy(gl, ctx, 4, 4, 4));
       this.trophy.setPosition(endCell.wall_x, endCell.wall_y);
       return this; // when done
     })();
-
   }
 
   addWalls(walls) {
@@ -77,21 +88,22 @@ export class BetonLevel {
     this.trophy.update();
     this.player.update();
 
-    if(this.player.currentCell == this.teapot.currentCell && !this.gameIsWon) {
+    if (this.player.currentCell == this.teapot.currentCell && !this.gameIsWon) {
       this.gameIsWon = true;
-      console.log("Wooow congratulation, you found the teapot. Don't we all <3 mazes? ");
+      console.log(
+        "Wooow congratulation, you found the teapot. Don't we all <3 mazes? "
+      );
     }
-
-
   }
 
   draw(lagFix) {
+      const lights = new SceneLightning(this.gl, this.ctx.shaderProgram)
     this.player.drawView(lagFix);
-    this.lights.setAmbientLight(0.1);
-    this.lights.clearDiffuseLights();
-    this.lights.addDiffuseLight([this.trophy.actualObject.x, this.trophy.actualObject.y, 2], [1.0, 0.8, 0.0], 0.4);
-    this.lights.addDiffuseLight([this.player.figure.actualObject.x, this.player.figure.actualObject.y, 3], [1.0, 1.0, 1.0], 0.8);
-    this.lights.draw(lagFix);
+    lights.setAmbientLight(0.1);
+    lights.clearDiffuseLights();
+    lights.addDiffuseLight([this.trophy.actualObject.x, this.trophy.actualObject.y, 2], [1.0, 0.8, 0.0], 0.4);
+    lights.addDiffuseLight([this.player.figure.actualObject.x, this.player.figure.actualObject.y, 3], [1.0, 1.0, 1.0], 0.8);
+    lights.draw(lagFix);
     this.walls.forEach((o) => {
       const texture = this.textureRepo.get(o.getTextureName());
       texture.activate();

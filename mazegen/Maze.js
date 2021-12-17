@@ -193,7 +193,9 @@ export class Maze {
   end_cell(startCell) {
     while (true) {
       const endCell = this.random_cell();
-      if (startCell !== endCell) {
+      const euclidianDistance = Math.pow(endCell.wall_x - startCell.wall_x, 2) + (Math.pow(endCell.wall_y - startCell.wall_y, 2));
+      const normalizedDist = euclidianDistance / this.size();
+      if (startCell !== endCell && normalizedDist > 0.3) {
         return endCell;
       }
     }
