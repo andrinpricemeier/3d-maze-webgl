@@ -103,7 +103,7 @@ export class BetonLevel {
     lights.addDiffuseLight(
       [this.floorWidth / 2, this.floorHeight / 2, 20],
       [1.0, 1.0, 1.0],
-      1.0
+      0.5
     );
     lights.draw(lagFix);
     this.walls.forEach((o) => {
