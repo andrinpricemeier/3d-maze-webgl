@@ -19,7 +19,7 @@ export class ThirdPersonView {
       WEST: 3,
     };
 
-    this.zoom = 0.02;
+    this.zoom = 0.03;
     this.orientation = this.orientations.NORTH;
     this.projection.update(-this.zoom * this.gl.drawingBufferWidth, this.zoom * this.gl.drawingBufferWidth, -this.zoom*this.gl.drawingBufferHeight, this.zoom * this.gl.drawingBufferHeight, 0, 100);
   }
