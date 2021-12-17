@@ -71,7 +71,7 @@ export class BetonLevel {
     this.floorWalls.forEach((o) => o.update());
     this.pillars.forEach((o) => o.update());
     this.floorTiles.forEach((o) => o.update());
-    this.trophy.update();
+    //this.trophy.update();
     this.player.update();
     if(this.player.currentCell == this.teapot.currentCell && !this.gameIsWon) {
       this.gameIsWon = true;
@@ -79,13 +79,8 @@ export class BetonLevel {
     }
   }
 
-<<<<<<< HEAD
   draw(lagFix) {
     this.player.drawView(lagFix);
-=======
-
-  async draw(lagFix) {
->>>>>>> edae1a5... feat: hide teapot somewhere in maze, have fun ;D
     this.lights.setAmbientLight(1.0);
     this.lights.addDiffuseLight([this.floorWidth/2, this.floorHeight/2, 20], [1.0, 1.0, 1.0], 0.05);
     this.lights.draw(lagFix);
