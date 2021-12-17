@@ -2,8 +2,6 @@ import { SceneLightning } from "../lightning/SceneLightning.js";
 import { Player } from "../Player.js";
 import { CellObject } from "../CellObject.js";
 import { PlayerFigure } from "../PlayerFigure.js";
-import { Trophy } from "../Trophy.js";
-import { Teapot } from "../objects/Teapot.js";
 
 export class BetonLevel {
   constructor(
@@ -15,7 +13,8 @@ export class BetonLevel {
     width,
     thickness,
     floorWidth,
-    floorHeight
+    floorHeight,
+    teapot
   ) {
     this.gl = gl;
     this.ctx = ctx;
@@ -34,13 +33,8 @@ export class BetonLevel {
     this.floorWidth = floorWidth;
     this.floorHeight = floorHeight;
     endCell.isTrophy = true;
-
-    return (async () => {
-      this.teapot = await new Teapot(this.gl, this.ctx, endCell);
-      this.trophy = new CellObject(new Trophy(gl, ctx, 4, 4, 4));
-      this.trophy.setPosition(endCell.wall_x, endCell.wall_y);
-      return this; // when done
-    })();
+    this.trophy = new CellObject(teapot);
+    this.trophy.setPosition(endCell.wall_x, endCell.wall_y);
   }
 
   addWalls(walls) {
@@ -69,13 +63,7 @@ export class BetonLevel {
         this.walls[i].setTextureName("beton_wall");
       }
     }
-    for (let i = 0; i < this.floorTiles.length; i++) {
-      if (i % 10 === 0) {
-        this.floorTiles[i].setTextureName("blue_beton_floor");
-      } else {
-        this.floorTiles[i].setTextureName("beton_floor");
-      }
-    }
+    this.floorTiles.forEach((o) => o.setTextureName("beton_floor"));
     this.floorWalls.forEach((o) => o.setTextureName("beton_floor"));
     this.pillars.forEach((o) => o.setTextureName("beton_wall"));
   }
@@ -88,7 +76,7 @@ export class BetonLevel {
     this.trophy.update();
     this.player.update();
 
-    if (this.player.currentCell == this.teapot.currentCell && !this.gameIsWon) {
+    if (this.player.currentCell.isTrophy && !this.gameIsWon) {
       this.gameIsWon = true;
       console.log(
         "Wooow congratulation, you found the teapot. Don't we all <3 mazes? "
@@ -97,12 +85,20 @@ export class BetonLevel {
   }
 
   draw(lagFix) {
-      const lights = new SceneLightning(this.gl, this.ctx.shaderProgram)
+    const lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
     this.player.drawView(lagFix);
     lights.setAmbientLight(0.1);
     lights.clearDiffuseLights();
-    lights.addDiffuseLight([this.trophy.actualObject.x, this.trophy.actualObject.y, 2], [1.0, 0.8, 0.0], 0.4);
-    lights.addDiffuseLight([this.player.figure.actualObject.x, this.player.figure.actualObject.y, 3], [1.0, 1.0, 1.0], 0.8);
+    lights.addDiffuseLight(
+      [this.trophy.actualObject.x, this.trophy.actualObject.y, 2],
+      [1.0, 0.8, 0.0],
+      0.4
+    );
+    lights.addDiffuseLight(
+      [this.player.figure.actualObject.x, this.player.figure.actualObject.y, 3],
+      [1.0, 1.0, 1.0],
+      0.8
+    );
     lights.draw(lagFix);
     this.walls.forEach((o) => {
       const texture = this.textureRepo.get(o.getTextureName());
@@ -130,6 +126,5 @@ export class BetonLevel {
     });
     this.trophy.draw(lagFix);
     this.player.draw(lagFix);
-    this.teapot.draw(lagFix);
   }
 }

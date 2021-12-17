@@ -34,6 +34,7 @@ export class BirdsEyeView {
       100
     );
   }
+  
   rotate(rotation) {}
 
   update() {

@@ -1,78 +1,74 @@
 import { Maze } from "./mazegen/Maze.js";
-import { MazeGenerator } from "./mazegen/Eller.js";
 import { SceneLightning } from "./lightning/SceneLightning.js";
-import { Player } from "./Player.js";
 import { RecursiveBacktracer } from "./mazegen/RecursiveBacktracker.js";
 import { Mask } from "./mazegen/Mask.js";
 import { showMazeBuilderProgress } from "./utils.js";
 
 export class Intro {
-  constructor(gl, ctx, textureRepo) {
+  constructor(gl, ctx, textureRepo, maskRepo) {
     this.gl = gl;
     this.ctx = ctx;
     this.textureRepo = textureRepo;
+    this.maskRepo = maskRepo;
   }
 
   async play() {
     await this.showAndrin();
     await this.showBoas();
     await this.showTobias();
+    await this.showCG();
   }
 
   async showAndrin() {
-    await this.show("mask_a", [1.0, 0.0, 0.0]);
+    await this.show("a", [1.0, 0.0, 0.0]);
   }
 
   async showBoas() {
-    await this.show("mask_b", [1.0, 1.0, 0.0]);
+    await this.show("b", [1.0, 1.0, 0.0]);
   }
 
   async showTobias() {
-    await this.show("mask_t", [1.0, 0.0, 1.0]);
+    await this.show("t", [1.0, 0.0, 1.0]);
+  }
+
+  async showCG() {
+    await this.show("cg", [0.0, 1.0, 1.0]);
   }
 
   async show(maskName, lightColor) {
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     const WIDTH = 10;
     const HEIGHT = 10;
     const THICKNESS = 2;
     const MAZE_DIM = 15;
     const mask = new Mask(MAZE_DIM, MAZE_DIM);
-    const img = this.textureRepo.get(maskName).img;
+    const img = this.maskRepo.get(maskName).img;
     mask.loadFromImage(img);
-    this.maze = new Maze(MAZE_DIM, MAZE_DIM, mask);
-    this.generator = new Eller();
-    //this.generator.generate(this.maze);
+    const maze = new Maze(MAZE_DIM, MAZE_DIM, mask);
     const backtracker = new RecursiveBacktracer();
-    backtracker.on(this.maze);
-    console.log(this.maze.toString());
+    backtracker.on(maze);
     const floorWidth =
-      (this.maze.columns + 1) * THICKNESS + this.maze.columns * WIDTH;
+      (maze.columns + 1) * THICKNESS + maze.columns * WIDTH;
     const floorHeight =
-      (this.maze.rows + 1) * THICKNESS + this.maze.rows * HEIGHT;
-    this.lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
-    this.lights.setAmbientLight(1.0);
-    this.lights.addDiffuseLight(
+      (maze.rows + 1) * THICKNESS + maze.rows * HEIGHT;
+    const lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
+    lights.setAmbientLight(1.0);
+    lights.addDiffuseLight(
       [floorWidth / 2, floorHeight / 2, 15],
       lightColor,
       1.0
     );
-    this.lights.draw();
-    this.player = new Player(
+    lights.draw();
+    const floorTiles = maze.getFloorTiles(
       this.gl,
       this.ctx,
-      this.maze.start_cell(),
       WIDTH,
-      THICKNESS
+      WIDTH,
+      THICKNESS,
+      THICKNESS,
+      HEIGHT
     );
-    this.floorTiles = this.maze.getFloorTiles(
-      this.gl,
-      this.ctx,
-      WIDTH - 2 * THICKNESS,
-      WIDTH - 2 * THICKNESS,
-      THICKNESS,
-      THICKNESS,
-      HEIGHT);
-    this.walls = this.maze.getWalls(
+    const walls = maze.getWalls(
       this.gl,
       this.ctx,
       WIDTH,
@@ -81,7 +77,7 @@ export class Intro {
       0,
       true
     );
-    this.floorWalls = this.maze.getWalls(
+    const floorWalls = maze.getWalls(
       this.gl,
       this.ctx,
       WIDTH,
@@ -90,7 +86,7 @@ export class Intro {
       HEIGHT,
       false
     );
-    this.pillars = this.maze.getPillars(
+    const pillars = maze.getPillars(
       this.gl,
       this.ctx,
       THICKNESS,
@@ -104,10 +100,11 @@ export class Intro {
       this.textureRepo,
       floorWidth,
       floorHeight,
-      this.walls,
-      this.pillars,
-      this.floorTiles,
-      15,
+      walls,
+      pillars,
+      floorTiles,
+      floorWalls,
+      10,
       2000
     );
   }

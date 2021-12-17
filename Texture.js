@@ -1,10 +1,9 @@
 export class Texture {
-  constructor(gl, shaderProgram, name, textureObj, img) {
+  constructor(gl, shaderProgram, name, textureObj) {
     this.gl = gl;
     this.shaderProgram = shaderProgram;
     this.name = name;
     this.textureObj = textureObj;
-    this.img = img;
   }
 
   deactivate() {    

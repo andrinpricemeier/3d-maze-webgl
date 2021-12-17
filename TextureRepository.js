@@ -43,8 +43,7 @@ export class TextureRepository {
           that.gl,
           that.shaderProgram,
           textureFile.name,
-          textureObj,
-          image
+          textureObj
         );
         that.textures.set(textureFile.name, texture);
         if (that.textureFiles.length === imagesLoaded) {

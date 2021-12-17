@@ -1,15 +1,12 @@
 import { Maze } from "./mazegen/Maze.js";
-import { MazeGenerator } from "./mazegen/Eller.js";
-import { SceneLightning } from "./lightning/SceneLightning.js";
 import { RecursiveBacktracer } from "./mazegen/RecursiveBacktracker.js";
 import { Mask } from "./mazegen/Mask.js";
 import { TextureRepository } from "./TextureRepository.js";
-import { Player } from "./Player.js";
-import { Intro } from "./Intro.js";
-import { showMazeBuilderProgress } from "./utils.js";
-import { Scene } from './Scene.js';
-import { BetonLevel } from './levels/BetonLevel.js';
-import { Teapot } from "./objects/Teapot.js";
+import { Scene } from "./Scene.js";
+import { BetonLevel } from "./levels/BetonLevel.js";
+import { MaskRepository } from "./MaskRepository.js";
+import { Intro } from './Intro.js';
+import { Teapot } from './objects/Teapot.js';
 
 window.onload = main;
 
@@ -19,12 +16,6 @@ function main() {
 }
 
 class Main {
-  gl;
-
-  ctx;
-
-  maze;
-
   constructor() {
     this.ctx = {
       shaderProgram: -1,
@@ -45,7 +36,7 @@ class Main {
     var canvas = document.getElementById("myCanvas");
     this.gl = createGLContext(canvas);
     this.initGL();
-    this.draw();
+    this.initWorld();
   }
 
   initGL() {
@@ -89,15 +80,21 @@ class Main {
     );
   }
 
-  draw() {
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+  initWorld() {
     this.textureRepo = new TextureRepository(this.gl, this.ctx.shaderProgram);
     this.textureRepo.add("beton_wall", "textures/beton_wall.png");
     this.textureRepo.add("beton_floor", "textures/beton_floor.png");
-    this.textureRepo.add("beton_wall_bulletholes", "textures/beton_wall_bulletholes.png");
+    this.textureRepo.add(
+      "beton_wall_bulletholes",
+      "textures/beton_wall_bulletholes.png"
+    );
     this.textureRepo.add("banksy_wall", "textures/banksy_wall.png");
-    this.textureRepo.add("blue_beton_floor", "textures/blue_beton_floor.png");
-    this.textureRepo.loadAll(() => this.readyToDraw(this.textureRepo));
+    this.maskRepo = new MaskRepository(this.gl, this.ctx.shaderProgram);
+    this.maskRepo.add("a", "masks/a.png");
+    this.maskRepo.add("b", "masks/b.png");
+    this.maskRepo.add("t", "masks/t.png");
+    this.maskRepo.add("cg", "masks/cg.png");
+    this.textureRepo.loadAll(() => this.texturesLoaded());
   }
 
   drawAnimated(current) {
@@ -105,18 +102,18 @@ class Main {
     this.previous = current;
     this.lag += elapsed;
     while (this.lag >= this.MS_PER_UPDATE) {
-      this.update();
+      this.updateWorld();
       this.lag -= this.MS_PER_UPDATE;
     }
-    this.render(this.lag / this.MS_PER_UPDATE);
+    this.renderWorld(this.lag / this.MS_PER_UPDATE);
     window.requestAnimationFrame((current) => this.drawAnimated(current));
   }
 
-  update() {
+  updateWorld() {
     this.scene.update();
   }
 
-  render(lagFix) {
+  renderWorld(lagFix) {
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     this.scene.draw(lagFix);
   }
@@ -172,7 +169,19 @@ class Main {
     this.scene = new Scene();
     const startCell = this.maze.start_cell();
     const endCell = this.maze.end_cell(startCell);
-    const level = await new BetonLevel(this.gl, this.ctx, this.textureRepo, startCell, endCell, WIDTH, THICKNESS, floorWidth, floorHeight);
+    const teapot = new Teapot(this.gl, this.ctx, this.teapotAsset);
+    const level = await new BetonLevel(
+      this.gl,
+      this.ctx,
+      this.textureRepo,
+      startCell,
+      endCell,
+      WIDTH,
+      THICKNESS,
+      floorWidth,
+      floorHeight,
+      teapot
+    );
     level.addFloorTiles(floorTiles);
     level.addFloorWalls(floorWalls);
     level.addPillars(pillars);
@@ -181,8 +190,15 @@ class Main {
     this.scene.addObjectToScene(level);
   }
 
-  readyToDraw(repo) {
-    this.textureRepo = repo;
+  texturesLoaded() {
+    this.maskRepo.loadAll(() => this.masksLoaded());
+  }
+
+  async masksLoaded() {
+    const response = await fetch("assets/teapot_0.obj");
+    this.teapotAsset = await response.text();
+    const intro = new Intro(this.gl, this.ctx, this.textureRepo, this.maskRepo);
+    await intro.play();
     this.buildMainLevel();
     window.requestAnimationFrame((current) => this.drawAnimated(current));
   }

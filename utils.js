@@ -33,10 +33,10 @@ export async function showMazeBuilderProgress(
   walls,
   pillars,
   floorTiles,
+  floorWalls,
   speedInMs,
   endWaitInMs
 ) {
-  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   const birdsEyeView = new BirdsEyeView(
     gl,
     ctx,
@@ -45,8 +45,8 @@ export async function showMazeBuilderProgress(
   );
   birdsEyeView.update();
   birdsEyeView.draw();
-  const floorTexture = textureRepo.get("floor");
-  const wallTexture = textureRepo.get("wall");
+  const floorTexture = textureRepo.get("beton_floor");
+  const wallTexture = textureRepo.get("beton_wall");
   const allWalls = walls.length;
   const shuffleWalls = shuffle(walls);
   for (let wallIndex = 0; wallIndex < allWalls; wallIndex++) {
@@ -54,10 +54,6 @@ export async function showMazeBuilderProgress(
     for (const wall of shuffleWalls) {
       if (i > wallIndex) {
         break;
-      }
-      floorTexture.activate();
-      for (const floorTile of floorTiles) {
-        floorTile.draw();
       }
       wallTexture.activate();
       wall.draw();
@@ -71,13 +67,15 @@ export async function showMazeBuilderProgress(
   for (const floorTile of floorTiles) {
     floorTile.draw();
   }
-  for (const wall of walls) {
-    wallTexture.activate();
-    wall.draw();
+  for (const floorWall of floorWalls) {
+    floorWall.draw();
   }
+  wallTexture.activate();
+  for (const wall of walls) {
+    wall.draw();
+  }  
   for (const pillar of pillars) {
     pillar.draw();
   }
-  floorTexture.deactivate();
   await sleep(endWaitInMs);
 }
