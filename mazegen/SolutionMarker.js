@@ -1,7 +1,7 @@
 import { SolidCube } from "../objects/SolidCube.js";
 
 export class SolutionMarker {
-  constructor(gl, ctx, width, height, thickness) {
+  constructor(gl, ctx, width, height, thickness, colorFactor) {
     this.gl = gl;
     this.ctx = ctx;
     this.width = width;
@@ -9,14 +9,15 @@ export class SolutionMarker {
     this.thickness = thickness;
     this.angularSpeed = (0.5 * 2 * Math.PI) / 360.0;
     this.angle = 0;
+    const color = [colorFactor * 1.0, 0.0, 0.0];
     this.cube = SolidCube(
       this.gl,
-      [1.0, 1.0, 0.0],
-      [1.0, 1.0, 0.0],
-      [1.0, 1.0, 0.0],
-      [1.0, 1.0, 0.0],
-      [1.0, 1.0, 0.0],
-      [1.0, 1.0, 0.0]
+      color,
+      color,
+      color,
+      color,
+      color,
+      color
     );
   }
 
