@@ -2,15 +2,29 @@ import { SolidCube } from "./objects/SolidCube.js";
 import { FirstPersonView } from "./views/FirstPersonView.js";
 import { ThirdPersonView } from "./views/ThirdPersonView.js";
 import { BirdsEyeView } from "./views/BirdsEyeView.js";
+import { Solution } from "./mazegen/Solution.js";
 
 export class Player {
-  constructor(gl, ctx, startCell, wallWidth, wallThickness, figure, floorWidth, floorHeight) {
+  constructor(
+    gl,
+    ctx,
+    startCell,
+    goalCell,
+    wallWidth,
+    wallThickness,
+    figure,
+    floorWidth,
+    floorHeight
+  ) {
     this.gl = gl;
     this.ctx = ctx;
     this.currentCell = startCell;
+    this.previousCell = this.currentCell;
+    this.goalCell = goalCell;
     this.floorWidth = floorWidth;
     this.floorHeight = floorHeight;
     this.figure = figure;
+    this.solution = new Solution(gl, ctx);
     this.figure.setPosition(startCell.wall_x, startCell.wall_y);
     this.pressed = {};
     this.handled = {
@@ -22,7 +36,9 @@ export class Player {
       KeyW: false,
       KeyD: false,
       KeyS: false,
+      KeyL: false,
       Digit1: false,
+      Digit2: false,
       Digit3: false,
     };
     this.key = {
@@ -34,6 +50,7 @@ export class Player {
       W: "KeyW",
       D: "KeyD",
       S: "KeyS",
+      L: "KeyL",
       Key1: "Digit1",
       Key2: "Digit2",
       Key3: "Digit3",
@@ -65,9 +82,23 @@ export class Player {
 
   //Regelmässig
   update() {
+    const newPrevious = this.currentCell;
     this.updateView();
     const direction = this.getDirection();
     const rotation = this.getRotation();
+
+    if (this.isDown(this.key.L)) {
+      this.solution.switchSolution();
+      console.log("Solving!");
+      if (this.solution.show) {
+        this.solution.solve(this.currentCell, this.goalCell);
+      }
+    }
+    if (this.previousCell !== this.currentCell && this.solution.show) {
+      console.log("Solving!");
+      this.solution.solve(this.currentCell, this.goalCell);
+    }
+    this.solution.update();
 
     if (direction !== -1) {
       if (this.canMoveTo(direction)) {
@@ -82,6 +113,7 @@ export class Player {
     this.personView.update(this.currentCell, direction);
     this.figure.setPosition(this.currentCell.wall_x, this.currentCell.wall_y);
     this.figure.update();
+    this.previousCell = newPrevious;
   }
 
   updateView() {
@@ -183,6 +215,7 @@ export class Player {
 
   draw(lagFix) {
     this.figure.draw(lagFix);
+    this.solution.draw(lagFix);
   }
 
   hookupEventListeners() {

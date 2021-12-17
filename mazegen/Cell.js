@@ -1,4 +1,5 @@
 import { Wall } from "./Wall.js";
+import { Distances } from "./Distances.js";
 export class Cell {
   constructor(row, column, num_rows, num_columns) {
     this.row = row;
@@ -24,24 +25,83 @@ export class Cell {
     return this.column;
   }
 
+  distances() {
+    const distances = new Distances(this);
+    let frontier = [this];
+    while (frontier.length > 0) {
+      const new_frontier = [];
+      for (const cell of frontier) {
+        for (const [link, value] of cell.links.entries()) {
+          if (distances.hasDistance(link)) {
+            continue;
+          }
+          distances.setDistance(link, distances.getDistance(cell) + 1);
+          new_frontier.push(link);
+        }
+      }
+      frontier = new_frontier;
+    }
+    return distances;
+  }
+
   getWalls(gl, ctx, width, height, thickness, offsetZ, mustBeLinked) {
     const walls = [];
     const wall_x = this.getViewColumn();
     const wall_y = this.getViewRow();
     if (!mustBeLinked || !this.isLinkedNorth()) {
-      const wall = new Wall(gl, ctx, width, height, thickness, wall_x, wall_y + 1, "horizontal", offsetZ);
+      const wall = new Wall(
+        gl,
+        ctx,
+        width,
+        height,
+        thickness,
+        wall_x,
+        wall_y + 1,
+        "horizontal",
+        offsetZ
+      );
       walls.push(wall);
     }
     if (!mustBeLinked || !this.isLinkedSouth()) {
-      const wall = new Wall(gl, ctx, width, height, thickness, wall_x, wall_y, "horizontal", offsetZ);
+      const wall = new Wall(
+        gl,
+        ctx,
+        width,
+        height,
+        thickness,
+        wall_x,
+        wall_y,
+        "horizontal",
+        offsetZ
+      );
       walls.push(wall);
     }
     if (!mustBeLinked || !this.isLinkedEast()) {
-      const wall = new Wall(gl, ctx, width, height, thickness, wall_x + 1, wall_y, "vertical", offsetZ);
+      const wall = new Wall(
+        gl,
+        ctx,
+        width,
+        height,
+        thickness,
+        wall_x + 1,
+        wall_y,
+        "vertical",
+        offsetZ
+      );
       walls.push(wall);
     }
     if (!mustBeLinked || !this.isLinkedWest()) {
-      const wall = new Wall(gl, ctx, width, height, thickness, wall_x, wall_y, "vertical", offsetZ);
+      const wall = new Wall(
+        gl,
+        ctx,
+        width,
+        height,
+        thickness,
+        wall_x,
+        wall_y,
+        "vertical",
+        offsetZ
+      );
       walls.push(wall);
     }
     return walls;

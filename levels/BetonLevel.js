@@ -13,7 +13,7 @@ export class BetonLevel {
 
     this.textureRepo = textureRepo;
     this.lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
-    this.player = new Player(this.gl, this.ctx, startCell, width, thickness, new CellObject(new PlayerFigure(gl, ctx, 4, 4, 4)), floorWidth, floorHeight);
+    this.player = new Player(this.gl, this.ctx, startCell, endCell, width, thickness, new CellObject(new PlayerFigure(gl, ctx, 4, 4, 4)), floorWidth, floorHeight);
     this.floorWidth = floorWidth;
     this.floorHeight = floorHeight;
 
