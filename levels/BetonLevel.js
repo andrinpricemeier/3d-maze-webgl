@@ -91,7 +91,6 @@ export class BetonLevel {
     const lights = new SceneLightning(this.gl, this.ctx.shaderProgram);
     this.player.drawView(lagFix);
     lights.setAmbientLight(0.1);
-    lights.clearDiffuseLights();
     lights.addDiffuseLight(
       [this.trophy.actualObject.x, this.trophy.actualObject.y, 2],
       [1.0, 0.8, 0.0],

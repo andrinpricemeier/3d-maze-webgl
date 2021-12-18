@@ -82,20 +82,20 @@ class Main {
 
   initWorld() {
     this.textureRepo = new TextureRepository(this.gl, this.ctx.shaderProgram);
-    this.textureRepo.add("beton_wall", "textures/beton_wall.png");
-    this.textureRepo.add("brick_wall", "textures/brick_wall.png");
-    this.textureRepo.add("clown_wall", "textures/clown_wall.png");
-    this.textureRepo.add("kandinsky_wall", "textures/kandinsky_wall.png");
-    this.textureRepo.add("universe_wall", "textures/universe_wall.png");
-    this.textureRepo.add("das_quadrat_wall", "textures/das_quadrat_wall.png");
-    this.textureRepo.add("escher_wall", "textures/escher_wall.png");
-    this.textureRepo.add("einstein_wall", "textures/einstein_wall.png");
-    this.textureRepo.add("beton_floor", "textures/beton_floor.png");
+    this.textureRepo.add("beton_wall", "textures/betonwall.png");
+    this.textureRepo.add("brick_wall", "textures/brickwall.png");
+    this.textureRepo.add("clown_wall", "textures/clownwall.png");
+    this.textureRepo.add("kandinsky_wall", "textures/kandinskywall.png");
+    this.textureRepo.add("universe_wall", "textures/universewall.png");
+    this.textureRepo.add("das_quadrat_wall", "textures/dasquadratwall.png");
+    this.textureRepo.add("escher_wall", "textures/escherwall.png");
+    this.textureRepo.add("einstein_wall", "textures/einsteinwall.png");
+    this.textureRepo.add("beton_floor", "textures/betonfloor.png");
     this.textureRepo.add(
       "beton_wall_bulletholes",
-      "textures/beton_wall_bulletholes.png"
+      "textures/betonwallbulletholes.png"
     );
-    this.textureRepo.add("banksy_wall", "textures/banksy_wall.png");
+    this.textureRepo.add("banksy_wall", "textures/banksywall.png");
     this.maskRepo = new MaskRepository(this.gl, this.ctx.shaderProgram);
     this.maskRepo.add("a", "masks/a.png");
     this.maskRepo.add("b", "masks/b.png");

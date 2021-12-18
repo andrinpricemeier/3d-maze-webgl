@@ -28,10 +28,6 @@ export class SceneLightning {
     this.diffuseLights.push(light);
   }
 
-  clearDiffuseLights(){
-    this.diffuseLights = [];
-  }
-
   addSpecularLight(position, color, factor, materialColor, shininess) {
     const light = new SpecularLight();
     light.setup(
