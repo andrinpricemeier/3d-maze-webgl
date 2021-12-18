@@ -4,7 +4,9 @@ export class Teapot {
   constructor(gl, ctx, rawObject) {
     this.rawObject = rawObject;
     this.angle = 0;
+    this.xAngle = (2 * Math.PI) / 8;
     this.angularSpeed = (0.5 * 2 * Math.PI) / 360.0;
+    this.zPositionOffset = -4;
     this.gl = gl;
     this.ctx = ctx;
     this.init();
@@ -13,7 +15,11 @@ export class Teapot {
   setCoordinates(x, y, z) {
     this.x = x;
     this.y = y;
-    this.z = z;
+    this.z = z+this.zPositionOffset;
+  }
+
+  setXRotation(x) {
+    this.xAngle = x;
   }
 
   computeNormals(v, f) {
@@ -139,9 +145,9 @@ export class Teapot {
     }
     const modelMatrix = mat4.create();
     mat4.translate(modelMatrix, modelMatrix, [this.x, this.y, this.z]);
-    mat4.rotate(modelMatrix, modelMatrix, (2 * Math.PI) / 8, [1, 0, 0]);
+    mat4.rotate(modelMatrix, modelMatrix, this.xAngle, [1, 0, 0]);
     mat4.rotate(modelMatrix, modelMatrix, this.angle, [0, 1, 0]);
-    mat4.scale(modelMatrix, modelMatrix, [2, 2, 2]);
+    mat4.scale(modelMatrix, modelMatrix, [1, 1, 1]);
     this.gl.uniformMatrix4fv(this.ctx.uModelMatrixId, false, modelMatrix);
 
     const normalMatrix = mat3.create();

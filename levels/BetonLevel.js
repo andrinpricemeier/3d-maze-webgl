@@ -72,6 +72,13 @@ export class BetonLevel {
     this.trophy.update();
     this.player.update();
 
+    if(this.player.isFirstPerson) {
+      this.trophy.setXRotation(Math.PI/2);
+    }
+    else {
+      this.trophy.setXRotation((2 * Math.PI) / 8);
+    }
+
     if (this.player.currentCell.isTrophy && !this.gameIsWon) {
       this.gameIsWon = true;
       console.log(

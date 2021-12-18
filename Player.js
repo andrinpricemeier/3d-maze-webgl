@@ -77,6 +77,7 @@ export class Player {
       wallWidth,
       wallThickness
     );
+    this.isFirstPerson = false;
     this.hookupEventListeners();
   }
 
@@ -125,6 +126,7 @@ export class Player {
         this.wallWidth,
         this.wallThickness
       );
+      this.isFirstPerson = true;
     } else if (this.isDown(this.key.Key2)) {
       this.personView = new BirdsEyeView(
         this.gl,
@@ -132,6 +134,7 @@ export class Player {
         this.floorWidth,
         this.floorHeight
       );
+      this.isFirstPerson = false;
     } else if (this.isDown(this.key.Key3)) {
       this.personView = new ThirdPersonView(
         this.gl,
@@ -140,6 +143,7 @@ export class Player {
         this.wallWidth,
         this.wallThickness
       );
+      this.isFirstPerson = false;
     }
   }
 

@@ -11,6 +11,10 @@ export class CellObject {
         this.actualObject.setCoordinates(new_x, new_y, -5);
     }
 
+    setXRotation(x) {
+        this.actualObject.setXRotation(x);
+    }
+
     update() {
         this.actualObject.update();
     }
