@@ -205,7 +205,7 @@ class Main {
     const response = await fetch("assets/teapot_0.obj");
     this.teapotAsset = await response.text();
     const intro = new Intro(this.gl, this.ctx, this.textureRepo, this.maskRepo);
-    //await intro.play();
+    await intro.play();
     this.buildMainLevel();
     window.requestAnimationFrame((current) => this.drawAnimated(current));
   }
