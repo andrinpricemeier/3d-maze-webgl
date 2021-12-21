@@ -26,7 +26,7 @@ class Main {
       uModelMatrixId: -1,
       uModelNormalMatrix: -1,
     };
-    this.MS_PER_UPDATE = 20;
+    this.MS_PER_UPDATE = 16.6;
     this.previous = 0;
     this.lag = 0.0;
     this.startup();
